@@ -20,4 +20,9 @@ public class WiktionaryDefinition {
     public String getExplanation() {
         return explanation;
     }
+
+    @Override
+    public String toString() {
+        return (category.isPresent() ? "(" + category.get() + ") " : "") + explanation;
+    }
 }
