@@ -18,7 +18,7 @@ public class WiktionaryWord {
         return word;
     }
 
-    public List<WiktionaryDefinition> getDefinition() {
+    public List<WiktionaryDefinition> getDefinitions() {
         return definition;
     }
 
