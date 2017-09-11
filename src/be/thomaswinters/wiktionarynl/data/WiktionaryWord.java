@@ -1,15 +1,18 @@
 package be.thomaswinters.wiktionarynl.data;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class WiktionaryWord {
     private final WordType wordType;
+    private final Optional<WiktionaryWord> rootWord;
     private final String word;
     private final List<WiktionaryDefinition> definition;
 
-    public WiktionaryWord(WordType wordType, String word, List<WiktionaryDefinition> definition) {
+    public WiktionaryWord(WordType wordType, Optional<WiktionaryWord> rootWord, String word, List<WiktionaryDefinition> definition) {
         this.wordType = wordType;
+        this.rootWord = rootWord;
         this.word = word;
         this.definition = definition;
     }
@@ -24,6 +27,18 @@ public class WiktionaryWord {
 
     public WordType getWordType() {
         return wordType;
+    }
+
+    public Optional<WiktionaryWord> getRootWord() {
+        return rootWord;
+    }
+
+    public WiktionaryWord getTotalRootWord() {
+        WiktionaryWord totalRoot = this;
+        while (totalRoot.getRootWord().isPresent()) {
+            totalRoot = totalRoot.getRootWord().get();
+        }
+        return totalRoot;
     }
 
     @Override
