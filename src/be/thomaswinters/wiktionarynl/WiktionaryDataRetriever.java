@@ -1,8 +1,6 @@
 package be.thomaswinters.wiktionarynl;
 
-import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
-import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
-import be.thomaswinters.wiktionarynl.data.WordType;
+import be.thomaswinters.wiktionarynl.data.*;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -14,6 +12,7 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,12 +36,12 @@ public class WiktionaryDataRetriever {
     ;
 
 
-    private Cache<String, List<WiktionaryWord>> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
+    private Cache<String, List<IWiktionaryWord>> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
 
-    public List<WiktionaryWord> retrieveDefinitions(String word) throws IOException, ExecutionException {
+    public List<IWiktionaryWord> retrieveDefinitions(String word) throws IOException, ExecutionException {
         return definitionCache.get(word, () -> {
 
-            List<WiktionaryWord> result = new ArrayList<>();
+            List<IWiktionaryWord> result = new ArrayList<>();
             Document doc;
             try {
                 doc = Jsoup.connect(BASE_URL + word).get();
@@ -63,7 +62,7 @@ public class WiktionaryDataRetriever {
                     List<WiktionaryDefinition> definitions = definitionsList.children().stream().map(this::getDefition).collect(Collectors.toList());
 
                     // TODO: make proxy!
-                    Optional<WiktionaryWord> rootWord = Optional.empty();
+                    Optional<IWiktionaryWord> rootWord = Optional.empty();
                     if (!definitions.isEmpty()) {
                         // Check if in first child, a link is provided
 //                        Optional<Element> rootLink = definitionsList.children().get(0).children().stream()
@@ -73,17 +72,24 @@ public class WiktionaryDataRetriever {
                         Optional<String> possibleRootWord = getRootWord(definitions);
 
                         if (possibleRootWord.isPresent()) {
-                            try {
-                                String newWord = possibleRootWord.get();
-                                if (!newWord.equals(word)) {
-                                    List<WiktionaryWord> wiktionaryWords = retrieveDefinitions(newWord);
-                                    if (!wiktionaryWords.isEmpty()) {
-                                        rootWord = Optional.of(wiktionaryWords.get(0));
+                            String newWord = possibleRootWord.get();
+                            if (!newWord.equals(word)) {
+                                Function<Void, IWiktionaryWord> loader = new Function<Void, IWiktionaryWord>() {
+                                    @Override
+                                    public IWiktionaryWord apply(Void aVoid) {
+                                        try {
+                                            List<IWiktionaryWord> rootWords = WiktionaryDataRetriever.this.retrieveDefinitions(newWord);
+                                            if (!rootWords.isEmpty()) {
+                                                return rootWords.get(0);
+                                            }
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                            throw new RuntimeException(ex);
+                                        }
+                                        throw new RuntimeException("Failed to load rootword");
                                     }
-                                }
-
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
+                                };
+                                rootWord = Optional.of(new WiktionaryWordProxy(loader));
                             }
                         }
                     }

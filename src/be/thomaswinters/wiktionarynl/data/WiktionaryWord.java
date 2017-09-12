@@ -4,37 +4,42 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class WiktionaryWord {
+public class WiktionaryWord implements IWiktionaryWord {
     private final WordType wordType;
-    private final Optional<WiktionaryWord> rootWord;
+    private final Optional<IWiktionaryWord> rootWord;
     private final String word;
     private final List<WiktionaryDefinition> definition;
 
-    public WiktionaryWord(WordType wordType, Optional<WiktionaryWord> rootWord, String word, List<WiktionaryDefinition> definition) {
+    public WiktionaryWord(WordType wordType, Optional<IWiktionaryWord> rootWord, String word, List<WiktionaryDefinition> definition) {
         this.wordType = wordType;
         this.rootWord = rootWord;
         this.word = word;
         this.definition = definition;
     }
 
+    @Override
     public String getWord() {
         return word;
     }
 
+    @Override
     public List<WiktionaryDefinition> getDefinitions() {
         return definition;
     }
 
+    @Override
     public WordType getWordType() {
         return wordType;
     }
 
-    public Optional<WiktionaryWord> getRootWord() {
+    @Override
+    public Optional<IWiktionaryWord> getRootWord() {
         return rootWord;
     }
 
-    public WiktionaryWord getTotalRootWord() {
-        WiktionaryWord totalRoot = this;
+    @Override
+    public IWiktionaryWord getTotalRootWord() {
+        IWiktionaryWord totalRoot = this;
         while (totalRoot.getRootWord().isPresent()) {
             totalRoot = totalRoot.getRootWord().get();
         }
