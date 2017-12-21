@@ -112,6 +112,7 @@ public class WiktionaryDataRetriever {
             Pattern.compile("verbogen vorm van de stellende trap van (\\w+)"),
             Pattern.compile("meervoud van het zelfstandig naamwoord (\\w+)"),
             Pattern.compile("onverbogen vorm van de vergrotende trap van (\\w+)"),
+            Pattern.compile("partitief van de stellende trap van (\\w+)"),
             Pattern.compile("betrekking hebbend op, van de aard van (\\w+)"),
 
             // Werkwoorden
@@ -120,6 +121,7 @@ public class WiktionaryDataRetriever {
             Pattern.compile("derde persoon enkelvoud tegenwoordige tijd van (\\w+)"),
             Pattern.compile("enkelvoud verleden tijd van (\\w+)"),
             Pattern.compile("meervoud verleden tijd van (\\w+)"),
+            Pattern.compile("voltooid deelwoord van (\\w+)"),
             Pattern.compile("onvoltooid deelwoord van (\\w+)"),
             Pattern.compile("verouderde gebiedende wijs meervoud van (\\w+)"),
             Pattern.compile("gebiedende wijs van (\\w+)")
