@@ -26,14 +26,12 @@ public class WiktionaryDataRetriever {
     private static final Map<String, WordType> WORDTYPE_TITLES;
 
     static {
-        ImmutableMap.Builder b = ImmutableMap.builder();
+        ImmutableMap.Builder<String, WordType> b = ImmutableMap.builder();
         b.put("WikiWoordenboek:Zelfstandig naamwoord", NOUN);
         b.put("WikiWoordenboek:Werkwoord", VERB);
         b.put("WikiWoordenboek:Bijvoeglijk naamwoord", ADJECTIVE);
         WORDTYPE_TITLES = b.build();
     }
-
-    ;
 
 
     private Cache<String, List<IWiktionaryWord>> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
@@ -62,45 +60,9 @@ public class WiktionaryDataRetriever {
                     List<WiktionaryDefinition> definitions = definitionsList.children().stream().map(this::getDefition).collect(Collectors.toList());
 
                     // TODO: make proxy!
-                    Optional<IWiktionaryWord> rootWord = Optional.empty();
-                    if (!definitions.isEmpty()) {
-                        // Check if in first child, a link is provided
+                    Optional<IWiktionaryWord> rootWord = getRootWord(word, definitions);
                     List<IWiktionaryWord> antonyms = retrieveAntonyms();
                     result.add(new WiktionaryWord(WORDTYPE_TITLES.get(element.attr("title")), rootWord, word, definitions, antonyms));
-    private List<IWiktionaryWord> retrieveAntonyms() {
-        return new ArrayList<>();
-    }
-//                        Optional<Element> rootLink = definitionsList.children().get(0).children().stream()
-//                                .filter(child -> child.text().contains("(")).flatMap(e -> e.getElementsByTag("a").stream())
-//                                .filter(e -> e.attr("href").startsWith("/wiki/")).findFirst();
-
-                        Optional<String> possibleRootWord = getRootWord(definitions);
-
-                        if (possibleRootWord.isPresent()) {
-                            String newWord = possibleRootWord.get();
-                            if (!newWord.equals(word)) {
-                                Function<Void, IWiktionaryWord> loader = new Function<Void, IWiktionaryWord>() {
-                                    @Override
-                                    public IWiktionaryWord apply(Void aVoid) {
-                                        try {
-                                            List<IWiktionaryWord> rootWords = WiktionaryDataRetriever.this.retrieveDefinitions(newWord);
-                                            if (!rootWords.isEmpty()) {
-                                                return rootWords.get(0);
-                                            }
-                                        } catch (Exception ex) {
-                                            ex.printStackTrace();
-                                            throw new RuntimeException(ex);
-                                        }
-                                        throw new RuntimeException("Failed to load rootword");
-                                    }
-                                };
-                                rootWord = Optional.of(new WiktionaryWordProxy(loader));
-                            }
-                        }
-                    }
-
-
-                    result.add(new WiktionaryWord(WORDTYPE_TITLES.get(element.attr("title")), rootWord, word, definitions));
                 }
             }
 
@@ -109,17 +71,58 @@ public class WiktionaryDataRetriever {
         });
     }
 
+    private List<IWiktionaryWord> retrieveAntonyms() {
+        return new ArrayList<>();
+    }
+
+    private Optional<IWiktionaryWord> getRootWord(String word, List<WiktionaryDefinition> definitions) {
+        Optional<IWiktionaryWord> rootWord = Optional.empty();
+        if (!definitions.isEmpty()) {
+            // Check if in first child, a link is provided
+//                        Optional<Element> rootLink = definitionsList.children().get(0).children().stream()
+//                                .filter(child -> child.text().contains("(")).flatMap(e -> e.getElementsByTag("a").stream())
+//                                .filter(e -> e.attr("href").startsWith("/wiki/")).findFirst();
+
+            Optional<String> possibleRootWord = getRootWord(definitions);
+
+            if (possibleRootWord.isPresent()) {
+                String newWord = possibleRootWord.get();
+                if (!newWord.equals(word)) {
+                    Function<Void, IWiktionaryWord> loader = new Function<Void, IWiktionaryWord>() {
+                        @Override
+                        public IWiktionaryWord apply(Void aVoid) {
+                            try {
+                                List<IWiktionaryWord> rootWords = WiktionaryDataRetriever.this.retrieveDefinitions(newWord);
+                                if (!rootWords.isEmpty()) {
+                                    return rootWords.get(0);
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                throw new RuntimeException(ex);
+                            }
+                            throw new RuntimeException("Failed to load rootword");
+                        }
+                    };
+
+                    rootWord = Optional.of(new WiktionaryWordProxy(loader));
+                }
+            }
+        }
+        return rootWord;
+    }
+
     private List<Pattern> rootFinders = Arrays.asList(
             // Substantief
             Pattern.compile("verkleinwoord enkelvoud van het zelfstandig naamwoord (\\w+)"),
 
             // Adjectief
             Pattern.compile("verbogen vorm van de stellende trap van (\\w+)"),
+            Pattern.compile("verbogen vorm van de overtreffende trap van (\\w+)"),
             Pattern.compile("meervoud van het zelfstandig naamwoord (\\w+)"),
             Pattern.compile("onverbogen vorm van de vergrotende trap van (\\w+)"),
             Pattern.compile("partitief van de stellende trap van (\\w+)"),
             Pattern.compile("betrekking hebbend op, van de aard van (\\w+)"),
-
+            
             // Werkwoorden
             Pattern.compile("eerste persoon enkelvoud tegenwoordige tijd van (\\w+)"),
             Pattern.compile("tweede persoon enkelvoud tegenwoordige tijd van (\\w+)"),
