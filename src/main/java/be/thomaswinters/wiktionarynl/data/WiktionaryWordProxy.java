@@ -2,13 +2,13 @@ package be.thomaswinters.wiktionarynl.data;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class WiktionaryWordProxy implements IWiktionaryWord {
     private IWiktionaryWord word = null;
-    private Function<Void, IWiktionaryWord> loader;
+    private Supplier<IWiktionaryWord> loader;
 
-    public WiktionaryWordProxy(Function<Void, IWiktionaryWord> loader) {
+    public WiktionaryWordProxy(Supplier<IWiktionaryWord> loader) {
         this.loader = loader;
     }
 
@@ -17,7 +17,7 @@ public class WiktionaryWordProxy implements IWiktionaryWord {
             return word;
         }
 
-        this.word = loader.apply(null);
+        this.word = loader.get();
 
         return word;
 

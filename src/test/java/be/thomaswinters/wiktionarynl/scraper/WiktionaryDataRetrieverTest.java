@@ -1,4 +1,4 @@
-package be.thomaswinters.wiktionarynl;
+package be.thomaswinters.wiktionarynl.scraper;
 
 import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class WiktionaryDataRetrieverTest {
     }
 
     @Test
-    public void mooi_antonym() throws IOException, ExecutionException {
+    public void lelijk_antonym() throws IOException, ExecutionException {
         List<IWiktionaryWord> lelijkWords = retriever.retrieveDefinitions("lelijk");
-
     }
+}
