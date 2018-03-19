@@ -13,4 +13,6 @@ public interface IWiktionaryWord {
     Optional<IWiktionaryWord> getRootWord();
 
     IWiktionaryWord getTotalRootWord();
+
+    List<IWiktionaryWord> getAntonyms();
 }

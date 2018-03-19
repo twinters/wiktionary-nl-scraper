@@ -47,4 +47,9 @@ public class WiktionaryWordProxy implements IWiktionaryWord {
     public IWiktionaryWord getTotalRootWord() {
         return getWiktionaryWord().getTotalRootWord();
     }
+
+    @Override
+    public List<IWiktionaryWord> getAntonyms() {
+        return getWiktionaryWord().getAntonyms();
+    }
 }

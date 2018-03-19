@@ -65,6 +65,11 @@ public class WiktionaryDataRetriever {
                     Optional<IWiktionaryWord> rootWord = Optional.empty();
                     if (!definitions.isEmpty()) {
                         // Check if in first child, a link is provided
+                    List<IWiktionaryWord> antonyms = retrieveAntonyms();
+                    result.add(new WiktionaryWord(WORDTYPE_TITLES.get(element.attr("title")), rootWord, word, definitions, antonyms));
+    private List<IWiktionaryWord> retrieveAntonyms() {
+        return new ArrayList<>();
+    }
 //                        Optional<Element> rootLink = definitionsList.children().get(0).children().stream()
 //                                .filter(child -> child.text().contains("(")).flatMap(e -> e.getElementsByTag("a").stream())
 //                                .filter(e -> e.attr("href").startsWith("/wiki/")).findFirst();

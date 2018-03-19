@@ -9,12 +9,14 @@ public class WiktionaryWord implements IWiktionaryWord {
     private final Optional<IWiktionaryWord> rootWord;
     private final String word;
     private final List<WiktionaryDefinition> definition;
+    private final List<IWiktionaryWord> antonyms;
 
-    public WiktionaryWord(WordType wordType, Optional<IWiktionaryWord> rootWord, String word, List<WiktionaryDefinition> definition) {
+    public WiktionaryWord(WordType wordType, Optional<IWiktionaryWord> rootWord, String word, List<WiktionaryDefinition> definition, List<IWiktionaryWord> antonyms) {
         this.wordType = wordType;
         this.rootWord = rootWord;
         this.word = word;
         this.definition = definition;
+        this.antonyms = antonyms;
     }
 
     @Override
@@ -45,6 +47,12 @@ public class WiktionaryWord implements IWiktionaryWord {
         }
         return totalRoot;
     }
+
+    @Override
+    public List<IWiktionaryWord> getAntonyms() {
+        return antonyms;
+    }
+
 
     @Override
     public String toString() {
