@@ -5,19 +5,19 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 /**
  * Retrieves the word in a particular language
  */
 public class WordLanguageRetriever {
     private final DefinitionsRetriever definitionFinder;
-    private final AntonymRetriever antonymFinder = new AntonymRetriever();
-    private final BiFunction<String, Language, IWiktionaryWord> scraper;
+    private final AntonymRetriever antonymFinder;
+    private final IWiktionaryWordScraper scraper;
 
-    public WordLanguageRetriever(BiFunction<String, Language, IWiktionaryWord> scraper) {
+    public WordLanguageRetriever(IWiktionaryWordScraper scraper) {
         this.scraper = scraper;
         this.definitionFinder = new DefinitionsRetriever(new RootWordRetriever(scraper));
+        this.antonymFinder = new AntonymRetriever(scraper);
     }
 
     public WiktionaryWord scrapeWord(String word, Language language, Elements elements) {

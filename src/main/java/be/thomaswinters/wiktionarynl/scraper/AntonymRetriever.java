@@ -10,6 +10,12 @@ import java.util.Map;
 public class AntonymRetriever {
     private static final List<String> antonymTags = Arrays.asList("antoniem");
 
+    private final IWiktionaryWordScraper scraper;
+
+    public AntonymRetriever(IWiktionaryWordScraper scraper) {
+        this.scraper = scraper;
+    }
+
     public List<IWiktionaryPage> retrieveAntonyms(Map<String, Elements> elements) {
         return null;
 

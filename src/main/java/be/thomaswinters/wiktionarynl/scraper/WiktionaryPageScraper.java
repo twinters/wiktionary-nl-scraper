@@ -16,22 +16,13 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiFunction;
 
-public class WiktionaryPageScraper {
+public class WiktionaryPageScraper implements IWiktionaryWordScraper {
 
-
-    private BiFunction<String, Language, IWiktionaryWord> scrapeWordLanguage = (word, language) -> {
-        try {
-            return retrieveDefinitions(word).getWord(language);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    };
 
     private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
     private final LanguagePool languagePool = new LanguagePool();
-    private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever(scrapeWordLanguage);
+    private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever(this);
 
 
     private final String languageCode;
@@ -112,4 +103,8 @@ public class WiktionaryPageScraper {
         new WiktionaryPageScraper().retrieveDefinitions("mooi");
     }
 
+    @Override
+    public IWiktionaryWord scrape(Language language, String word) throws IOException, ExecutionException {
+        return retrieveDefinitions(word).getWord(language);
+    }
 }

@@ -7,16 +7,15 @@ import be.thomaswinters.wiktionarynl.data.WiktionaryWordProxy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RootWordRetriever {
 
-    private final BiFunction<String, Language, IWiktionaryWord> scraper;
+    private final IWiktionaryWordScraper scraper;
 
-    public RootWordRetriever(BiFunction<String, Language, IWiktionaryWord> scraper) {
+    public RootWordRetriever(IWiktionaryWordScraper scraper) {
         this.scraper = scraper;
     }
 
@@ -26,7 +25,13 @@ public class RootWordRetriever {
         if (possibleRootWord.isPresent()) {
             String newWord = possibleRootWord.get();
             if (!newWord.equals(word)) {
-                Supplier<IWiktionaryWord> loader = () -> scraper.apply(newWord, language);
+                Supplier<IWiktionaryWord> loader = () -> {
+                    try {
+                        return scraper.scrape(language, newWord);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                };
                 rootWord = Optional.of(new WiktionaryWordProxy(loader));
             }
         }
