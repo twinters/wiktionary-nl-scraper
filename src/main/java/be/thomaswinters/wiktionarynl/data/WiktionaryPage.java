@@ -17,8 +17,19 @@ public class WiktionaryPage implements IWiktionaryPage {
         return languageMap.keySet();
     }
 
+    public boolean hasLanguage(Language language) {
+        return languageMap.containsKey(language);
+    }
+
     @Override
     public WiktionaryWord getWord(Language language) {
         return languageMap.get(language);
+    }
+
+    @Override
+    public String toString() {
+        return "WiktionaryPage{" +
+                "languages=" + languageMap.keySet() +
+                '}';
     }
 }

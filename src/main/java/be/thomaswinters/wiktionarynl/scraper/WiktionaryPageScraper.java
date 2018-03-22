@@ -13,11 +13,13 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class WiktionaryPageScraper implements IWiktionaryWordScraper {
 
 
-    private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
+    private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
+
     private final LanguagePool languagePool = new LanguagePool();
     private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever(this);
 
@@ -40,14 +42,17 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
 
     public WiktionaryPage scrapePage(String word) throws IOException, ExecutionException, HttpStatusException {
         return definitionCache.get(word, () -> {
-            Document doc = Jsoup.connect(getWiktionaryUrl(word)).get();
-
-            Element content = doc.getElementById("mw-content-text").getElementsByClass("mw-parser-output").get(0);
-            Map<Language, Elements> languageParts = getLanguageParts(content);
-
             Map<Language, WiktionaryWord> pageElements = new HashMap<>();
-            for (Map.Entry<Language, Elements> entry : languageParts.entrySet()) {
-                pageElements.put(entry.getKey(), wordLanguageRetriever.scrapeWord(word, entry.getKey(), entry.getValue()));
+            try {
+                Document doc = Jsoup.connect(getWiktionaryUrl(word)).get();
+                Element content = doc.getElementById("mw-content-text").getElementsByClass("mw-parser-output").get(0);
+                Map<Language, Elements> languageParts = getLanguageParts(content);
+
+                for (Map.Entry<Language, Elements> entry : languageParts.entrySet()) {
+                    pageElements.put(entry.getKey(), wordLanguageRetriever.scrapeWord(word, entry.getKey(), entry.getValue()));
+                }
+            } catch (HttpStatusException httpEx) {
+                System.out.println("couldn't find " + word + ". Exception: " + httpEx.getUrl() + " / " + httpEx.getStatusCode() + " / " + httpEx.getMessage());
             }
 
             return new WiktionaryPage(pageElements);
@@ -76,7 +81,7 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
             if (e.tag().getName().equals("h2")) {
                 if (!currentLanguage.isPresent() && !currentRelevantElements.isEmpty()) {
                     // No language present, but there are elements
-                    System.out.println("WARNING: The following elements got lost due to no present language: " + currentRelevantElements);
+//                    System.out.println("WARNING: The following elements got lost due to no present language: " + currentRelevantElements);
                 } else {
                     if (currentLanguage.isPresent()) {
                         allLanguageElements.put(currentLanguage.get(), new Elements(currentRelevantElements));
