@@ -26,7 +26,11 @@ public class Language {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(languageName);
+    }
+
+    @Override
+    public String toString() {
+        return "Language{" + languageName + '}';
     }
 }

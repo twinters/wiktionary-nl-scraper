@@ -14,11 +14,11 @@ import static org.junit.Assert.*;
 
 public class WiktionaryDataRetrieverTest {
 
-    private WiktionaryDataRetriever retriever;
+    private WiktionaryPageScraper retriever;
 
     @Before
     public void setup() {
-        retriever = new WiktionaryDataRetriever();
+        retriever = new WiktionaryPageScraper();
     }
 
     @Test

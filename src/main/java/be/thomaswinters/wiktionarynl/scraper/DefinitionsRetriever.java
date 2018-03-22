@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static be.thomaswinters.wiktionarynl.data.WordType.*;
 
-public class DefinitionsFinder {
+public class DefinitionsRetriever {
 
 
     private static final Map<String, WordType> WORDTYPE_TITLES;
@@ -31,7 +31,7 @@ public class DefinitionsFinder {
         WORDTYPE_TITLES = b.build();
     }
 
-    private final RootWordFinder rootWordFinder = new RootWordFinder();
+    private final RootWordRetriever rootWordFinder = new RootWordRetriever();
 
 
     public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(Document doc) {

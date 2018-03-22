@@ -11,8 +11,8 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RootWordFinder {
-    public Optional<IWiktionaryWord> getRootWord(WiktionaryDataRetriever wiktionaryDataRetriever, String word, List<WiktionaryDefinition> definitions) {
+public class RootWordRetriever {
+    public Optional<IWiktionaryWord> getRootWord(WiktionaryPageScraper wiktionaryDataRetriever, String word, List<WiktionaryDefinition> definitions) {
         Optional<IWiktionaryWord> rootWord = Optional.empty();
         if (!definitions.isEmpty()) {
             // Check if in first child, a link is provided
