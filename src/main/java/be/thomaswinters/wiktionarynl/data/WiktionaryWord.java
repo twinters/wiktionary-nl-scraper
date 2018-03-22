@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 public class WiktionaryWord implements IWiktionaryWord {
     private final String word;
     private final Map<WordType, List<WiktionaryDefinition>> definitions;
-    private final List<IWiktionaryPage> antonyms;
+    private final List<IWiktionaryWord> antonyms;
 
-    public WiktionaryWord(String word, Map<WordType, List<WiktionaryDefinition>> definitions, List<IWiktionaryPage> antonyms) {
+    public WiktionaryWord(String word, Map<WordType, List<WiktionaryDefinition>> definitions, List<IWiktionaryWord> antonyms) {
         this.word = word;
         this.definitions = ImmutableMap.copyOf(definitions);
         this.antonyms = antonyms;
@@ -28,7 +28,7 @@ public class WiktionaryWord implements IWiktionaryWord {
     }
 
     @Override
-    public List<IWiktionaryPage> getAntonyms() {
+    public List<IWiktionaryWord> getAntonyms() {
         return antonyms;
     }
 

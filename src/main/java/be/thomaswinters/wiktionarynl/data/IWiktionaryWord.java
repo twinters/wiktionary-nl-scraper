@@ -8,5 +8,5 @@ public interface IWiktionaryWord {
 
     Map<WordType, List<WiktionaryDefinition>> getDefinitions();
 
-    List<IWiktionaryPage> getAntonyms();
+    List<IWiktionaryWord> getAntonyms();
 }

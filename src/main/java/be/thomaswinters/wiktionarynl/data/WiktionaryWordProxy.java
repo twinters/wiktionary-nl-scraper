@@ -31,7 +31,7 @@ public class WiktionaryWordProxy implements IWiktionaryWord {
     }
 
     @Override
-    public List<IWiktionaryPage> getAntonyms() {
+    public List<IWiktionaryWord> getAntonyms() {
         return getWiktionaryWord().getAntonyms();
     }
 }

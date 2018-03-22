@@ -2,12 +2,10 @@ package be.thomaswinters.wiktionarynl.scraper;
 
 import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.Language;
-import be.thomaswinters.wiktionarynl.data.WiktionaryWordProxy;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,22 +18,13 @@ public class RootWordRetriever {
     }
 
     public Optional<IWiktionaryWord> getRootWord(String word, Language language, String explanation) {
-        Optional<IWiktionaryWord> rootWord = Optional.empty();
         Optional<String> possibleRootWord = getRootWord(explanation);
-        if (possibleRootWord.isPresent()) {
-            String newWord = possibleRootWord.get();
-            if (!newWord.equals(word)) {
-                Supplier<IWiktionaryWord> loader = () -> {
-                    try {
-                        return scraper.scrape(language, newWord);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                };
-                rootWord = Optional.of(new WiktionaryWordProxy(loader));
-            }
+
+        // Prevent recursion
+        if (possibleRootWord.isPresent() && possibleRootWord.get().equals(word)) {
+            return Optional.empty();
         }
-        return rootWord;
+        return possibleRootWord.map(newWord -> scraper.scrape(language, newWord));
     }
 
     private List<Pattern> rootFinders = Arrays.asList(

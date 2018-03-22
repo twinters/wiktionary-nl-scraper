@@ -26,7 +26,7 @@ public class WordLanguageRetriever {
 
         // Get all elements
         Map<WordType, List<WiktionaryDefinition>> definitions = definitionFinder.retrieveDefinitions(word, language, subsections);
-        List<IWiktionaryPage> antonyms = antonymFinder.retrieveAntonyms(subsections);
+        List<IWiktionaryWord> antonyms = antonymFinder.retrieveAntonyms(language, subsections);
 
         return new WiktionaryWord(word, definitions, antonyms);
     }

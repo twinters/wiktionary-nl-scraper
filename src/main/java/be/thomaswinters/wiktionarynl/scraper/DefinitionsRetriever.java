@@ -85,7 +85,6 @@ public class DefinitionsRetriever {
         }
         String explanation = text.trim();
 
-// TODO: fix rootword in definition
         Optional<IWiktionaryWord> rootWord = rootWordFinder.getRootWord(word, language, explanation);
 
         return new WiktionaryDefinition(category, explanation, rootWord);

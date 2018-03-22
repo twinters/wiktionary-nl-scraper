@@ -1,9 +1,6 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
-import be.thomaswinters.wiktionarynl.data.Language;
-import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
-import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
+import be.thomaswinters.wiktionarynl.data.*;
 import be.thomaswinters.wiktionarynl.util.LanguagePool;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -41,7 +38,7 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
     }
 
 
-    public WiktionaryPage retrieveDefinitions(String word) throws IOException, ExecutionException, HttpStatusException {
+    public WiktionaryPage scrapePage(String word) throws IOException, ExecutionException, HttpStatusException {
         return definitionCache.get(word, () -> {
             Document doc = Jsoup.connect(getWiktionaryUrl(word)).get();
 
@@ -100,11 +97,18 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
 
     public static void main(String[] args) throws IOException, ExecutionException {
 
-        new WiktionaryPageScraper().retrieveDefinitions("mooi");
+        new WiktionaryPageScraper().scrapePage("mooi");
     }
 
     @Override
-    public IWiktionaryWord scrape(Language language, String word) throws IOException, ExecutionException {
-        return retrieveDefinitions(word).getWord(language);
+    public IWiktionaryWord scrape(Language language, String word) {
+        return new WiktionaryWordProxy(() -> {
+            try {
+                return scrapePage(word).getWord(language);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

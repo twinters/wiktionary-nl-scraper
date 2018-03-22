@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -25,7 +26,7 @@ public class WiktionaryPageScraperTest {
     @Test
     public void mooiste_root() throws IOException, ExecutionException {
 
-        WiktionaryPage mooisteWords = retriever.retrieveDefinitions("mooiste");
+        WiktionaryPage mooisteWords = retriever.scrapePage("mooiste");
 
         // Check if word has a word
         assertTrue(mooisteWords.getLanguages().contains(NEDERLANDS));
@@ -59,7 +60,7 @@ public class WiktionaryPageScraperTest {
 
     public void test_has_definitions(String input) throws IOException, ExecutionException {
         try {
-            WiktionaryPage page = retriever.retrieveDefinitions(input);
+            WiktionaryPage page = retriever.scrapePage(input);
 
             // Check if word has a word
             assertFalse(input + " doesn't have any languages", page.getLanguages().isEmpty());
@@ -72,7 +73,7 @@ public class WiktionaryPageScraperTest {
 
     @Test
     public void lelijk_antonym() throws IOException, ExecutionException {
-        WiktionaryPage lelijkWords = retriever.retrieveDefinitions("lelijk");
-//        assertEquals(Arrays.asList("mooi"), lelijkWords.getWord(NEDERLANDS).getAntonyms().stream().map(wikiword -> wikiword.getWord()));
+        WiktionaryPage lelijkWords = retriever.scrapePage("lelijk");
+        assertEquals(Arrays.asList("mooi"), lelijkWords.getWord(NEDERLANDS).getAntonyms().stream().map(wikiword -> wikiword.getWord()).collect(Collectors.toList()));
     }
 }
