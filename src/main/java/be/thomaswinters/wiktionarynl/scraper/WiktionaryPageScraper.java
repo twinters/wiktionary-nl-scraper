@@ -13,12 +13,11 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class WiktionaryPageScraper implements IWiktionaryWordScraper {
 
 
-    private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().softValues().build();
 
     private final LanguagePool languagePool = new LanguagePool();
     private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever(this);

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static be.thomaswinters.wiktionarynl.data.WordType.*;
@@ -58,23 +57,23 @@ public class DefinitionsRetriever {
 
 
     private WiktionaryDefinition getDefinition(String word, Language language, Element li) {
+
+        // Get examples
+        Elements exampleDl = li.select("dd");
+
+        List<String> examples = exampleDl.stream()
+                // Trim using special trim character replacement
+                .map(e -> e.text().replaceAll("\u00A0", " ").trim())
+                .collect(Collectors.toList());
+
+
+        // Remove examples from definition: Remove dl and dd
+        Elements examplesDl = li.select("dl");
+        examplesDl.remove();
+
         String text = li.text();
 
-        // Remove dl and dd
-        List<String> toRemoveElements = li.children().select("*").stream().filter(e -> e.tagName()
-                .equals("dl"))
-                .flatMap(dl -> dl.children().select("*").stream())
-                .flatMap(dl -> dl.textNodes().stream()
-                        .map(textnode -> textnode.getWholeText())).collect(Collectors.toList());
-        toRemoveElements.sort((e, f) -> f.length() - e.length());
-        for (String string : toRemoveElements) {
-            if (string.length() > 2) {
-                text = text.replaceAll(Pattern.quote(string), "");
-            }
-        }
-
         Optional<String> category = Optional.empty();
-
         // Check if a category is specified
         int firstClosingBracket = text.indexOf(")");
         int firstOpeningBracket = text.indexOf("(");
@@ -85,9 +84,10 @@ public class DefinitionsRetriever {
         }
         String explanation = text.trim();
 
+
         Optional<IWiktionaryWord> rootWord = rootWordFinder.getRootWord(word, language, explanation);
 
-        return new WiktionaryDefinition(category, explanation, rootWord);
+        return new WiktionaryDefinition(category, explanation, examples, rootWord);
     }
 
     private Element findNextList(Element e) {

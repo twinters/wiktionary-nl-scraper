@@ -76,4 +76,33 @@ public class WiktionaryPageScraperTest {
         WiktionaryPage lelijkWords = retriever.scrapePage("lelijk");
         assertEquals(Arrays.asList("mooi"), lelijkWords.getWord(NEDERLANDS).getAntonyms().stream().map(wikiword -> wikiword.getWord()).collect(Collectors.toList()));
     }
+
+    @Test
+    public void burgemeester_definition() throws IOException, ExecutionException {
+        String word = "burgemeester";
+        WiktionaryPage quizPage = retriever.scrapePage(word);
+        test_has_definitions(word);
+        List<WiktionaryDefinition> definitions = quizPage.getWord(NEDERLANDS).getDefinitions().get(WordType.NOUN);
+
+
+        assertEquals("hoofd van het gemeentebestuur", definitions.get(0).getExplanation());
+        assertEquals("beroep", definitions.get(0).getCategory().get());
+        assertEquals("het bord onder de spil van een molen", definitions.get(1).getExplanation());
+        assertEquals("de naam van een tweetal meeuwensoorten:", definitions.get(2).getExplanation());
+        assertEquals(Arrays.asList("de grote burgemeester", "de kleine burgemeester"), definitions.get(2).getExamples());
+        assertEquals("vogels", definitions.get(2).getCategory().get());
+    }
+
+    @Test
+    public void quizprogramma_example() throws IOException, ExecutionException {
+        String word = "quizprogramma";
+        WiktionaryPage quizPage = retriever.scrapePage(word);
+        test_has_definitions(word);
+        WiktionaryDefinition definition = quizPage.getWord(NEDERLANDS).getDefinitions().get(WordType.NOUN).get(0);
+
+
+        assertEquals("een televisieprogramma waarin kandidaten onderworpen worden aan vragen waarmee zij prijzen kunnen winnen", definition.getExplanation());
+        assertEquals("Twee Voor Twaalf was lange tijd een bekend quizprogramma.", definition.getExamples().get(0));
+
+    }
 }

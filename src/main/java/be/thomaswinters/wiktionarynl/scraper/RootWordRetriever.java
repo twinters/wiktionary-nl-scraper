@@ -18,6 +18,8 @@ public class RootWordRetriever {
     }
 
     public Optional<IWiktionaryWord> getRootWord(String word, Language language, String explanation) {
+        // TODO: possibly use the href link provided in the Element object?
+
         Optional<String> possibleRootWord = getRootWord(explanation);
 
         // Prevent recursion

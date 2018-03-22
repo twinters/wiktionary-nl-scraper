@@ -1,16 +1,20 @@
 package be.thomaswinters.wiktionarynl.data;
 
+
+import java.util.List;
 import java.util.Optional;
 
 public class WiktionaryDefinition {
     private final Optional<IWiktionaryWord> rootWord;
     private final Optional<String> category;
     private final String explanation;
+    private final List<String> examples;
 
 
-    public WiktionaryDefinition(Optional<String> category, String explanation, Optional<IWiktionaryWord> rootWord) {
+    public WiktionaryDefinition(Optional<String> category, String explanation, List<String> examples, Optional<IWiktionaryWord> rootWord) {
         this.category = category;
         this.explanation = explanation;
+        this.examples = examples;
         this.rootWord = rootWord;
     }
 
@@ -52,4 +56,7 @@ public class WiktionaryDefinition {
     }
 
 
+    public List<String> getExamples() {
+        return examples;
+    }
 }
