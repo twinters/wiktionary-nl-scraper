@@ -42,7 +42,8 @@ public class WiktionaryPageScraperTest {
 
         // Root word
         assertTrue(firstDefinition.getRootWord().isPresent());
-        assertEquals("mooi", firstDefinition.getRootWord().get().getWord());
+        assertEquals("mooi", firstDefinition.getRootWord().get().getWord().getWord());
+        assertEquals("mooi", firstDefinition.getRootWord().get().getTotalRoot().getWord().getWord());
 
     }
 
