@@ -4,8 +4,8 @@ import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
 import be.thomaswinters.wiktionarynl.data.WordType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.List;
 import java.util.Map;
@@ -34,12 +34,13 @@ public class DefinitionsRetriever {
     private final RootWordRetriever rootWordFinder = new RootWordRetriever();
 
 
-    public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(Document doc) {
+    public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(Elements elements) {
 
         Builder<WordType, List<WiktionaryDefinition>> builder = ImmutableMap.builder();
 
         // Find a defition, and make the list only use uniques
-        List<Element> wordtypeTitles = doc.getElementsByAttribute("title").stream().filter(e -> WORDTYPE_TITLES.keySet().contains(e.attr("title"))).distinct().collect(Collectors.toList());
+        List<Element> wordtypeTitles = elements.stream().flatMap(el -> el.getElementsByAttribute("title").stream().filter(e -> WORDTYPE_TITLES.keySet().contains(e.attr("title"))).distinct()).collect(Collectors.toList());
+
 
 //        List<Element> nounLinkStart = doc.getElementsByAttributeValue("title", WORDTYPE_TITLES.get(NOUN)).stream().distinct().collect(Collectors.toList());
 
@@ -47,7 +48,6 @@ public class DefinitionsRetriever {
             Optional<Element> nounHeaderElement = element.parents().stream().filter(this::isHeader).findFirst();
             if (nounHeaderElement.isPresent()) {
                 Element definitionsList = findNextList(nounHeaderElement.get());
-                System.out.println(element);
                 WordType wordType = WORDTYPE_TITLES.get(element.attr("title"));
                 List<WiktionaryDefinition> definitions = definitionsList.children().stream().map(this::getDefinition).collect(Collectors.toList());
                 builder.put(wordType, definitions);

@@ -1,6 +1,8 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.*;
+import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
+import be.thomaswinters.wiktionarynl.data.Language;
+import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
 import be.thomaswinters.wiktionarynl.util.LanguagePool;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -16,47 +18,52 @@ import java.util.concurrent.ExecutionException;
 
 public class WiktionaryPageScraper {
 
-    private static final String BASE_URL = "https://nl.wiktionary.org/wiki/";
-
-
-    private final Cache<String, List<IWiktionaryWord>> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
+    private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
     private final LanguagePool languagePool = new LanguagePool();
-    private final DefinitionsRetriever definitionFinder = new DefinitionsRetriever();
-    private final AntonymRetriever antonymFinder = new AntonymRetriever();
+    private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever();
 
-    public static void main(String[] args) throws IOException, ExecutionException {
 
-        System.out.println(new WiktionaryPageScraper().retrieveDefinitions("mooi"));
+    private final String languageCode;
+
+    public WiktionaryPageScraper(String languageCode) {
+        this.languageCode = languageCode;
     }
 
-    public List<IWiktionaryWord> retrieveDefinitions(String word) throws IOException, ExecutionException {
+    public WiktionaryPageScraper() {
+        this("nl");
+    }
+
+
+    private String getWiktionaryUrl(String word) {
+        return "https://" + languageCode + ".wiktionary.org/wiki/" + word;
+    }
+
+
+    public WiktionaryPage retrieveDefinitions(String word) throws IOException, ExecutionException, HttpStatusException {
         return definitionCache.get(word, () -> {
-            List<IWiktionaryWord> result = new ArrayList<>();
-            Document doc;
-            try {
-                doc = Jsoup.connect(BASE_URL + word).get();
-            } catch (HttpStatusException e) {
-                return result;
-            }
+            Document doc = Jsoup.connect(getWiktionaryUrl(word)).get();
 
             Element content = doc.getElementById("mw-content-text").getElementsByClass("mw-parser-output").get(0);
             Map<Language, Elements> languageParts = getLanguageParts(content);
 
-            System.out.println(languageParts);
+            Map<Language, IWiktionaryWord> pageElements = new HashMap<>();
+            for (Map.Entry<Language, Elements> entry : languageParts.entrySet()) {
+                pageElements.put(entry.getKey(), wordLanguageRetriever.scrapeWord(word, entry.getValue()));
+            }
 
-            Map<WordType, List<WiktionaryDefinition>> definitions = definitionFinder.retrieveDefinitions(doc);
-
-            // TODO: make proxy!
-            List<IWiktionaryPage> antonyms = antonymFinder.retrieveAntonyms(null);
-            result.add(new WiktionaryWord(word, definitions, antonyms));
-
-            return result;
+            return new WiktionaryPage(pageElements);
         });
     }
 
+    /**
+     * Takes all the h2 of the element as the name of the language, and all other elements as part of the last
+     * encountered language definition element.
+     *
+     * @param content
+     * @return
+     */
     private Map<Language, Elements> getLanguageParts(Element content) {
-
-        Map<Language, Elements> result = new HashMap<>();
+        Map<Language, Elements> allLanguageElements = new HashMap<>();
 
         Optional<Language> currentLanguage = Optional.empty();
         List<Element> currentRelevantElements = new ArrayList<>();
@@ -73,7 +80,7 @@ public class WiktionaryPageScraper {
                     System.out.println("WARNING: The following elements got lost due to no present language: " + currentRelevantElements);
                 } else {
                     if (currentLanguage.isPresent()) {
-                        result.put(currentLanguage.get(), new Elements(currentRelevantElements));
+                        allLanguageElements.put(currentLanguage.get(), new Elements(currentRelevantElements));
                     }
                     currentLanguage = Optional.of(languagePool.createLanguage(e.text()));
                     currentRelevantElements = new ArrayList<>();
@@ -81,12 +88,16 @@ public class WiktionaryPageScraper {
             }
             currentRelevantElements.add(e);
         }
-        if (currentLanguage.isPresent())
-
-        {
-            result.put(currentLanguage.get(), new Elements(currentRelevantElements));
+        if (currentLanguage.isPresent()) {
+            allLanguageElements.put(currentLanguage.get(), new Elements(currentRelevantElements));
         }
 
-        return result;
+        return allLanguageElements;
     }
+
+    public static void main(String[] args) throws IOException, ExecutionException {
+
+        System.out.println(new WiktionaryPageScraper().retrieveDefinitions("mooi"));
+    }
+
 }

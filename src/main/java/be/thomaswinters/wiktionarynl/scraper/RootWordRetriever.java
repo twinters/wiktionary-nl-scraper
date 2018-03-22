@@ -2,6 +2,7 @@ package be.thomaswinters.wiktionarynl.scraper;
 
 import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
+import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
 import be.thomaswinters.wiktionarynl.data.WiktionaryWordProxy;
 
 import java.util.Arrays;
@@ -27,9 +28,10 @@ public class RootWordRetriever {
                 if (!newWord.equals(word)) {
                     Supplier<IWiktionaryWord> loader = () -> {
                         try {
-                            List<IWiktionaryWord> rootWords = wiktionaryDataRetriever.retrieveDefinitions(newWord);
-                            if (!rootWords.isEmpty()) {
-                                return rootWords.get(0);
+                            WiktionaryPage rootWords = wiktionaryDataRetriever.retrieveDefinitions(newWord);
+                            if (!rootWords.getLanguages().isEmpty()) {
+//                                return rootWords.get(0);
+                                return null; // TODO
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();

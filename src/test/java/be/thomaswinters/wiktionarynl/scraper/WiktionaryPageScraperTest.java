@@ -1,6 +1,8 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
 import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
+import be.thomaswinters.wiktionarynl.data.Language;
+import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
 import be.thomaswinters.wiktionarynl.data.WordType;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +14,9 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
 
-public class WiktionaryDataRetrieverTest {
+public class WiktionaryPageScraperTest {
+
+    private static final Language NEDERLANDS = new Language("Nederlands");
 
     private WiktionaryPageScraper retriever;
 
@@ -24,11 +28,12 @@ public class WiktionaryDataRetrieverTest {
     @Test
     public void mooiste_root() throws IOException, ExecutionException {
 
-        List<IWiktionaryWord> mooisteWords = retriever.retrieveDefinitions("mooiste");
+        WiktionaryPage mooisteWords = retriever.retrieveDefinitions("mooiste");
 
         // Check if word has a word
-        assertEquals(1, mooisteWords.size());
-        IWiktionaryWord word = mooisteWords.get(0);
+        assertTrue(mooisteWords.getLanguages().contains("NEDERLANDS"));
+        IWiktionaryWord word = mooisteWords.getWord(NEDERLANDS);
+        assertEquals(1, word.getDefinitions().size());
 
         // check for definition correctness
         assertEquals("mooiste", word.getWord());
@@ -54,10 +59,11 @@ public class WiktionaryDataRetrieverTest {
 
     public void test_has_definitions(String input) throws IOException, ExecutionException {
         try {
-            List<IWiktionaryWord> mooisteWords = retriever.retrieveDefinitions(input);
+            WiktionaryPage page = retriever.retrieveDefinitions(input);
 
             // Check if word has a word
-            assertFalse(input + " doesn't have a definition", mooisteWords.isEmpty());
+            assertFalse(input + " doesn't have any languages", page.getLanguages().isEmpty());
+            assertFalse(input + " doesn't have Dutch definitions", page.getWord(NEDERLANDS).getDefinitions().isEmpty());
         } catch (Exception e) {
             fail(input + " gave the following exception: " + e.getMessage());
             throw e;
@@ -66,6 +72,6 @@ public class WiktionaryDataRetrieverTest {
 
     @Test
     public void lelijk_antonym() throws IOException, ExecutionException {
-        List<IWiktionaryWord> lelijkWords = retriever.retrieveDefinitions("lelijk");
+        WiktionaryPage lelijkWords = retriever.retrieveDefinitions("lelijk");
     }
 }
