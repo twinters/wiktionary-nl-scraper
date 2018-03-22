@@ -1,21 +1,21 @@
 package be.thomaswinters.wiktionarynl.data;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class WiktionaryWord implements IWiktionaryWord {
-    private final WordType wordType;
-    private final Optional<IWiktionaryWord> rootWord;
+    //    private final Optional<IWiktionaryWord> rootWord;
     private final String word;
-    private final List<WiktionaryDefinition> definition;
-    private final List<IWiktionaryWord> antonyms;
+    private final Map<WordType, List<WiktionaryDefinition>> definitions;
+    private final List<IWiktionaryPage> antonyms;
 
-    public WiktionaryWord(WordType wordType, Optional<IWiktionaryWord> rootWord, String word, List<WiktionaryDefinition> definition, List<IWiktionaryWord> antonyms) {
-        this.wordType = wordType;
-        this.rootWord = rootWord;
+    public WiktionaryWord(String word, Map<WordType, List<WiktionaryDefinition>> definitions, List<IWiktionaryPage> antonyms) {
+//        this.rootWord = rootWord;
         this.word = word;
-        this.definition = definition;
+        this.definitions = ImmutableMap.copyOf(definitions);
         this.antonyms = antonyms;
     }
 
@@ -25,31 +25,13 @@ public class WiktionaryWord implements IWiktionaryWord {
     }
 
     @Override
-    public List<WiktionaryDefinition> getDefinitions() {
-        return definition;
+    public Map<WordType, List<WiktionaryDefinition>> getDefinitions() {
+        return definitions;
     }
 
-    @Override
-    public WordType getWordType() {
-        return wordType;
-    }
 
     @Override
-    public Optional<IWiktionaryWord> getRootWord() {
-        return rootWord;
-    }
-
-    @Override
-    public IWiktionaryWord getTotalRootWord() {
-        IWiktionaryWord totalRoot = this;
-        while (totalRoot.getRootWord().isPresent()) {
-            totalRoot = totalRoot.getRootWord().get();
-        }
-        return totalRoot;
-    }
-
-    @Override
-    public List<IWiktionaryWord> getAntonyms() {
+    public List<IWiktionaryPage> getAntonyms() {
         return antonyms;
     }
 
@@ -57,6 +39,6 @@ public class WiktionaryWord implements IWiktionaryWord {
     @Override
     public String toString() {
         return "WiktionaryWord for " + word + ". Definitions:\n" +
-                definition.stream().map(WiktionaryDefinition::toString).collect(Collectors.joining("\n"));
+                definitions.entrySet().stream().map(Object::toString).collect(Collectors.joining("\n"));
     }
 }

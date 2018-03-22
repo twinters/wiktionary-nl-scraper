@@ -25,4 +25,19 @@ public class WiktionaryDefinition {
     public String toString() {
         return (category.isPresent() ? "(" + category.get() + ") " : "") + explanation;
     }
+
+// TODO rootword fix
+//    @Override
+////    public Optional<IWiktionaryWord> getRootWord() {
+////        return rootWord;
+////    }
+//
+//    @Override
+//    public IWiktionaryWord getTotalRootWord() {
+//        IWiktionaryWord totalRoot = this;
+//        while (totalRoot.getRootWord().isPresent()) {
+//            totalRoot = totalRoot.getRootWord().get();
+//        }
+//        return totalRoot;
+//    }
 }

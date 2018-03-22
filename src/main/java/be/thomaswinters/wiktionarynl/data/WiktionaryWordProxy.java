@@ -1,7 +1,7 @@
 package be.thomaswinters.wiktionarynl.data;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class WiktionaryWordProxy implements IWiktionaryWord {
@@ -29,27 +29,13 @@ public class WiktionaryWordProxy implements IWiktionaryWord {
     }
 
     @Override
-    public List<WiktionaryDefinition> getDefinitions() {
+    public Map<WordType, List<WiktionaryDefinition>> getDefinitions() {
         return getWiktionaryWord().getDefinitions();
     }
 
-    @Override
-    public WordType getWordType() {
-        return getWiktionaryWord().getWordType();
-    }
 
     @Override
-    public Optional<IWiktionaryWord> getRootWord() {
-        return getWiktionaryWord().getRootWord();
-    }
-
-    @Override
-    public IWiktionaryWord getTotalRootWord() {
-        return getWiktionaryWord().getTotalRootWord();
-    }
-
-    @Override
-    public List<IWiktionaryWord> getAntonyms() {
+    public List<IWiktionaryPage> getAntonyms() {
         return getWiktionaryWord().getAntonyms();
     }
 }
