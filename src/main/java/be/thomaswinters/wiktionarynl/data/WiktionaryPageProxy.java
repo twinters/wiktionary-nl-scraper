@@ -26,6 +26,6 @@ public class WiktionaryPageProxy implements IWiktionaryPage {
 
     @Override
     public WiktionaryWord getWord(Language language) {
-        return page.getWord(language);
+        return getWiktionaryPage().getWord(language);
     }
 }

@@ -20,7 +20,8 @@ public class WiktionaryPageScraper {
 
     private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
     private final LanguagePool languagePool = new LanguagePool();
-    private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever();
+    private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever(
+            new DefinitionsRetriever(new RootWordRetriever(this)));
 
 
     private final String languageCode;
@@ -48,7 +49,7 @@ public class WiktionaryPageScraper {
 
             Map<Language, WiktionaryWord> pageElements = new HashMap<>();
             for (Map.Entry<Language, Elements> entry : languageParts.entrySet()) {
-                pageElements.put(entry.getKey(), wordLanguageRetriever.scrapeWord(word, entry.getValue()));
+                pageElements.put(entry.getKey(), wordLanguageRetriever.scrapeWord(word, entry.getKey(), entry.getValue()));
             }
 
             return new WiktionaryPage(pageElements);

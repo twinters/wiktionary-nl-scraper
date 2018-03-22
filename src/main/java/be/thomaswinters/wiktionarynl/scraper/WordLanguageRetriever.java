@@ -1,22 +1,23 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.IWiktionaryPage;
-import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
-import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
-import be.thomaswinters.wiktionarynl.data.WordType;
+import be.thomaswinters.wiktionarynl.data.*;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.*;
 
 public class WordLanguageRetriever {
-    private final DefinitionsRetriever definitionFinder = new DefinitionsRetriever();
+    private final DefinitionsRetriever definitionFinder;
     private final AntonymRetriever antonymFinder = new AntonymRetriever();
 
-    public WiktionaryWord scrapeWord(String word, Elements elements) {
+    public WordLanguageRetriever(DefinitionsRetriever definitionFinder) {
+        this.definitionFinder = definitionFinder;
+    }
+
+    public WiktionaryWord scrapeWord(String word, Language language, Elements elements) {
         Map<String, Elements> subsections = collectSubsections(elements);
 
-        Map<WordType, List<WiktionaryDefinition>> definitions = definitionFinder.retrieveDefinitions(subsections);
+        Map<WordType, List<WiktionaryDefinition>> definitions = definitionFinder.retrieveDefinitions(word, language, subsections);
 
         // TODO: make proxy!
         List<IWiktionaryPage> antonyms = antonymFinder.retrieveAntonyms(null);

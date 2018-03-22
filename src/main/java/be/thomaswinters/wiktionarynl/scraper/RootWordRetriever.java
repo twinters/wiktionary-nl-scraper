@@ -1,9 +1,6 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.IWiktionaryPage;
-import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
-import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
-import be.thomaswinters.wiktionarynl.data.WiktionaryPageProxy;
+import be.thomaswinters.wiktionarynl.data.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,38 +10,41 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RootWordRetriever {
-    public Optional<IWiktionaryPage> getRootWord(WiktionaryPageScraper wiktionaryDataRetriever, String word, List<WiktionaryDefinition> definitions) {
+
+    private final WiktionaryPageScraper wiktionaryPageScraper;
+
+    public RootWordRetriever(WiktionaryPageScraper wiktionaryPageScraper) {
+        this.wiktionaryPageScraper = wiktionaryPageScraper;
+    }
+
+    public Optional<RootWord> getRootWord(String word, Language language, String explanation) {
         Optional<IWiktionaryPage> rootWord = Optional.empty();
-        if (!definitions.isEmpty()) {
-            // Check if in first child, a link is provided
+//        if (!definitions.isEmpty()) {
+        // Check if in first child, a link is provided
 //                        Optional<Element> rootLink = definitionsList.children().get(0).children().stream()
 //                                .filter(child -> child.text().contains("(")).flatMap(e -> e.getElementsByTag("a").stream())
 //                                .filter(e -> e.attr("href").startsWith("/wiki/")).findFirst();
 
-            Optional<String> possibleRootWord = getRootWord(definitions);
+        Optional<String> possibleRootWord = getRootWord(explanation);
 
-            if (possibleRootWord.isPresent()) {
-                String newWord = possibleRootWord.get();
-                if (!newWord.equals(word)) {
-                    Supplier<IWiktionaryPage> loader = () -> {
-                        try {
-                            WiktionaryPage rootWords = wiktionaryDataRetriever.retrieveDefinitions(newWord);
-                            if (!rootWords.getLanguages().isEmpty()) {
-//                                return rootWords.get(0);
-                                return null; // TODO
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            throw new RuntimeException(ex);
-                        }
-                        throw new RuntimeException("Failed to load rootword");
-                    };
+        if (possibleRootWord.isPresent()) {
+            String newWord = possibleRootWord.get();
+            if (!newWord.equals(word)) {
+                Supplier<IWiktionaryPage> loader = () -> {
+                    System.out.println("Loading page");
+                    try {
+                        WiktionaryPage rootWordPage = wiktionaryPageScraper.retrieveDefinitions(newWord);
+                        return rootWordPage;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        throw new RuntimeException(ex);
+                    }
+                };
 
-                    rootWord = Optional.of(new WiktionaryPageProxy(loader));
-                }
+                rootWord = Optional.of(new WiktionaryPageProxy(loader));
             }
         }
-        return rootWord;
+        return rootWord.map(e -> new RootWord(e, language));
     }
 
     private List<Pattern> rootFinders = Arrays.asList(
@@ -71,16 +71,11 @@ public class RootWordRetriever {
             Pattern.compile("gebiedende wijs van (\\w+)")
     );
 
-    private Optional<String> getRootWord(List<WiktionaryDefinition> definitions) {
-        if (definitions.isEmpty()) {
-            return Optional.empty();
-        }
-
-        String definition = definitions.get(0).getExplanation();
+    private Optional<String> getRootWord(String explanation) {
 
         // Check for adjective
         for (Pattern rootFinder : rootFinders) {
-            Matcher rootMatcher = rootFinder.matcher(definition);
+            Matcher rootMatcher = rootFinder.matcher(explanation);
             if (rootMatcher.find()) {
                 return Optional.of(rootMatcher.group(1));
             }

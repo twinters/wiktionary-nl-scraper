@@ -1,5 +1,7 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
+import be.thomaswinters.wiktionarynl.data.Language;
+import be.thomaswinters.wiktionarynl.data.RootWord;
 import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
 import be.thomaswinters.wiktionarynl.data.WordType;
 import com.google.common.collect.ImmutableMap;
@@ -32,10 +34,13 @@ public class DefinitionsRetriever {
         WORDTYPE_TITLES = b.build();
     }
 
-    private final RootWordRetriever rootWordFinder = new RootWordRetriever();
+    private final RootWordRetriever rootWordFinder;
 
+    public DefinitionsRetriever(RootWordRetriever rootWordFinder) {
+        this.rootWordFinder = rootWordFinder;
+    }
 
-    public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(Map<String, Elements> subsections) {
+    public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(String word, Language language, Map<String, Elements> subsections) {
 
         Builder<WordType, List<WiktionaryDefinition>> builder = ImmutableMap.builder();
 
@@ -44,7 +49,7 @@ public class DefinitionsRetriever {
             if (WORDTYPE_TITLES.containsKey(subsection.getKey())) {
                 WordType wordType = WORDTYPE_TITLES.get(subsection.getKey());
                 Element definitionsList = findNextList(subsection.getValue().first());
-                List<WiktionaryDefinition> definitions = definitionsList.children().stream().map(this::getDefinition).collect(Collectors.toList());
+                List<WiktionaryDefinition> definitions = definitionsList.children().stream().map(listElement -> getDefinition(word, language, listElement)).collect(Collectors.toList());
                 builder.put(wordType, definitions);
             }
         }
@@ -52,7 +57,7 @@ public class DefinitionsRetriever {
     }
 
 
-    private WiktionaryDefinition getDefinition(Element li) {
+    private WiktionaryDefinition getDefinition(String word, Language language, Element li) {
         String text = li.text();
 
         // Remove dl and dd
@@ -78,11 +83,12 @@ public class DefinitionsRetriever {
             category = Optional.of(categoryText);
             text = text.substring(firstClosingBracket + 1).trim();
         }
+        String explanation = text.trim();
 
 // TODO: fix rootword in definition
-//        Optional<IWiktionaryWord> rootWord = rootWordFinder.getRootWord(this, word, definitions);
+        Optional<RootWord> rootWord = rootWordFinder.getRootWord(word, language, explanation);
 
-        return new WiktionaryDefinition(category, text.trim());
+        return new WiktionaryDefinition(category, explanation, rootWord);
     }
 
     private Element findNextList(Element e) {

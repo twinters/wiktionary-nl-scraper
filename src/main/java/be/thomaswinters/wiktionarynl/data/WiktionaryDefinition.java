@@ -3,14 +3,15 @@ package be.thomaswinters.wiktionarynl.data;
 import java.util.Optional;
 
 public class WiktionaryDefinition {
+    private final Optional<RootWord> rootWord;
     private final Optional<String> category;
     private final String explanation;
 
 
-    public WiktionaryDefinition(Optional<String> category, String explanation) {
-
+    public WiktionaryDefinition(Optional<String> category, String explanation, Optional<RootWord> rootWord) {
         this.category = category;
         this.explanation = explanation;
+        this.rootWord = rootWord;
     }
 
     public Optional<String> getCategory() {
@@ -21,23 +22,14 @@ public class WiktionaryDefinition {
         return explanation;
     }
 
+    public Optional<RootWord> getRootWord() {
+        return rootWord;
+    }
+    
     @Override
     public String toString() {
         return (category.isPresent() ? "(" + category.get() + ") " : "") + explanation;
     }
 
-// TODO rootword fix
-//    @Override
-////    public Optional<IWiktionaryWord> getRootWord() {
-////        return rootWord;
-////    }
-//
-//    @Override
-//    public IWiktionaryWord getTotalRootWord() {
-//        IWiktionaryWord totalRoot = this;
-//        while (totalRoot.getRootWord().isPresent()) {
-//            totalRoot = totalRoot.getRootWord().get();
-//        }
-//        return totalRoot;
-//    }
+
 }

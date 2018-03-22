@@ -1,9 +1,6 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.Language;
-import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
-import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
-import be.thomaswinters.wiktionarynl.data.WordType;
+import be.thomaswinters.wiktionarynl.data.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,12 +35,14 @@ public class WiktionaryPageScraperTest {
         // check for definition correctness
         assertEquals("mooiste", word.getWord());
         assertEquals(1, word.getDefinitions().size());
-        assertEquals(1, word.getDefinitions().get(WordType.ADJECTIVE).size());
-        assertEquals("verbogen vorm van de overtreffende trap van mooi", word.getDefinitions().get(WordType.ADJECTIVE).get(0).getExplanation());
+        List<WiktionaryDefinition> adjDefinitions = word.getDefinitions().get(WordType.ADJECTIVE);
+        assertEquals(1, adjDefinitions.size());
+        WiktionaryDefinition firstDefinition = adjDefinitions.get(0);
+        assertEquals("verbogen vorm van de overtreffende trap van mooi", firstDefinition.getExplanation());
 
         // Root word
-//        assertTrue(word.getRootWord().isPresent());
-//        assertEquals("mooi", word.getRootWord().get().getWord());
+        assertTrue(firstDefinition.getRootWord().isPresent());
+        assertEquals("mooi", firstDefinition.getRootWord().get().getWord());
 
     }
 
