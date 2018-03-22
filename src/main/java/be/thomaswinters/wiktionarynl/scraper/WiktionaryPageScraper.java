@@ -82,11 +82,12 @@ public class WiktionaryPageScraper {
                     if (currentLanguage.isPresent()) {
                         allLanguageElements.put(currentLanguage.get(), new Elements(currentRelevantElements));
                     }
-                    currentLanguage = Optional.of(languagePool.createLanguage(e.text()));
-                    currentRelevantElements = new ArrayList<>();
                 }
+                currentLanguage = Optional.of(languagePool.createLanguage(e.text()));
+                currentRelevantElements = new ArrayList<>();
+            } else {
+                currentRelevantElements.add(e);
             }
-            currentRelevantElements.add(e);
         }
         if (currentLanguage.isPresent()) {
             allLanguageElements.put(currentLanguage.get(), new Elements(currentRelevantElements));
@@ -97,7 +98,7 @@ public class WiktionaryPageScraper {
 
     public static void main(String[] args) throws IOException, ExecutionException {
 
-        System.out.println(new WiktionaryPageScraper().retrieveDefinitions("mooi"));
+        new WiktionaryPageScraper().retrieveDefinitions("mooi");
     }
 
 }

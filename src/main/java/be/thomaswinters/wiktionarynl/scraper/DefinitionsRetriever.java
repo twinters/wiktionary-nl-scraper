@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -34,27 +35,19 @@ public class DefinitionsRetriever {
     private final RootWordRetriever rootWordFinder = new RootWordRetriever();
 
 
-    public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(Elements elements) {
+    public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(Map<String, Elements> subsections) {
 
         Builder<WordType, List<WiktionaryDefinition>> builder = ImmutableMap.builder();
 
-        // Find a defition, and make the list only use uniques
-        List<Element> wordtypeTitles = elements.stream().flatMap(el -> el.getElementsByAttribute("title").stream().filter(e -> WORDTYPE_TITLES.keySet().contains(e.attr("title"))).distinct()).collect(Collectors.toList());
-
-
-//        List<Element> nounLinkStart = doc.getElementsByAttributeValue("title", WORDTYPE_TITLES.get(NOUN)).stream().distinct().collect(Collectors.toList());
-
-        for (Element element : wordtypeTitles) {// Iterate until we find the nounHeaderElement
-            Optional<Element> nounHeaderElement = element.parents().stream().filter(this::isHeader).findFirst();
-            if (nounHeaderElement.isPresent()) {
-                Element definitionsList = findNextList(nounHeaderElement.get());
-                WordType wordType = WORDTYPE_TITLES.get(element.attr("title"));
+        for (Entry<String, Elements> subsection : subsections.entrySet()) {
+            // Check if it's a definition
+            if (WORDTYPE_TITLES.containsKey(subsection.getKey())) {
+                WordType wordType = WORDTYPE_TITLES.get(subsection.getKey());
+                Element definitionsList = findNextList(subsection.getValue().first());
                 List<WiktionaryDefinition> definitions = definitionsList.children().stream().map(this::getDefinition).collect(Collectors.toList());
                 builder.put(wordType, definitions);
             }
         }
-
-
         return builder.build();
     }
 
