@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class WiktionaryWord {
+public class WiktionaryWord implements IWiktionaryWord {
     private final String word;
     private final Map<WordType, List<WiktionaryDefinition>> definitions;
     private final List<IWiktionaryPage> antonyms;
@@ -17,14 +17,17 @@ public class WiktionaryWord {
         this.antonyms = antonyms;
     }
 
+    @Override
     public String getWord() {
         return word;
     }
 
+    @Override
     public Map<WordType, List<WiktionaryDefinition>> getDefinitions() {
         return definitions;
     }
 
+    @Override
     public List<IWiktionaryPage> getAntonyms() {
         return antonyms;
     }

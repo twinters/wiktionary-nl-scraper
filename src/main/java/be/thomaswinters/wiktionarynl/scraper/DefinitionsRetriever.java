@@ -1,7 +1,7 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
+import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.Language;
-import be.thomaswinters.wiktionarynl.data.RootWord;
 import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
 import be.thomaswinters.wiktionarynl.data.WordType;
 import com.google.common.collect.ImmutableMap;
@@ -86,7 +86,7 @@ public class DefinitionsRetriever {
         String explanation = text.trim();
 
 // TODO: fix rootword in definition
-        Optional<RootWord> rootWord = rootWordFinder.getRootWord(word, language, explanation);
+        Optional<IWiktionaryWord> rootWord = rootWordFinder.getRootWord(word, language, explanation);
 
         return new WiktionaryDefinition(category, explanation, rootWord);
     }

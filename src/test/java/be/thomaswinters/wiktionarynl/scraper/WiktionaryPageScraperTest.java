@@ -42,8 +42,8 @@ public class WiktionaryPageScraperTest {
 
         // Root word
         assertTrue(firstDefinition.getRootWord().isPresent());
-        assertEquals("mooi", firstDefinition.getRootWord().get().getWord().getWord());
-        assertEquals("mooi", firstDefinition.getRootWord().get().getTotalRoot().getWord().getWord());
+        assertEquals("mooi", firstDefinition.getRootWord().get().getWord());
+        assertEquals("mooi", firstDefinition.getTotalRoot().get().getWord());
 
     }
 
@@ -73,5 +73,6 @@ public class WiktionaryPageScraperTest {
     @Test
     public void lelijk_antonym() throws IOException, ExecutionException {
         WiktionaryPage lelijkWords = retriever.retrieveDefinitions("lelijk");
+//        assertEquals(Arrays.asList("mooi"), lelijkWords.getWord(NEDERLANDS).getAntonyms().stream().map(wikiword -> wikiword.getWord()));
     }
 }

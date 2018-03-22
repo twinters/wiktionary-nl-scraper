@@ -1,5 +1,6 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
+import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.Language;
 import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
 import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
@@ -15,13 +16,22 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
 
 public class WiktionaryPageScraper {
 
+
+    private BiFunction<String, Language, IWiktionaryWord> scrapeWordLanguage = (word, language) -> {
+        try {
+            return retrieveDefinitions(word).getWord(language);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    };
+
     private final Cache<String, WiktionaryPage> definitionCache = CacheBuilder.newBuilder().maximumSize(1000).build();
     private final LanguagePool languagePool = new LanguagePool();
-    private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever(
-            new DefinitionsRetriever(new RootWordRetriever(this)));
+    private final WordLanguageRetriever wordLanguageRetriever = new WordLanguageRetriever(scrapeWordLanguage);
 
 
     private final String languageCode;

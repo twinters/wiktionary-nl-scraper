@@ -5,22 +5,28 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
+/**
+ * Retrieves the word in a particular language
+ */
 public class WordLanguageRetriever {
     private final DefinitionsRetriever definitionFinder;
     private final AntonymRetriever antonymFinder = new AntonymRetriever();
+    private final BiFunction<String, Language, IWiktionaryWord> scraper;
 
-    public WordLanguageRetriever(DefinitionsRetriever definitionFinder) {
-        this.definitionFinder = definitionFinder;
+    public WordLanguageRetriever(BiFunction<String, Language, IWiktionaryWord> scraper) {
+        this.scraper = scraper;
+        this.definitionFinder = new DefinitionsRetriever(new RootWordRetriever(scraper));
     }
 
     public WiktionaryWord scrapeWord(String word, Language language, Elements elements) {
+        // Get all subsections present in this block
         Map<String, Elements> subsections = collectSubsections(elements);
 
+        // Get all elements
         Map<WordType, List<WiktionaryDefinition>> definitions = definitionFinder.retrieveDefinitions(word, language, subsections);
-
-        // TODO: make proxy!
-        List<IWiktionaryPage> antonyms = antonymFinder.retrieveAntonyms(null);
+        List<IWiktionaryPage> antonyms = antonymFinder.retrieveAntonyms(subsections);
 
         return new WiktionaryWord(word, definitions, antonyms);
     }
