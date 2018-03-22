@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 public class WiktionaryPageProxy implements IWiktionaryPage {
-    private WiktionaryPage page = null;
-    private Supplier<WiktionaryPage> loader;
+    private IWiktionaryPage page = null;
+    private Supplier<IWiktionaryPage> loader;
 
-    public WiktionaryPageProxy(Supplier<WiktionaryPage> loader) {
+    public WiktionaryPageProxy(Supplier<IWiktionaryPage> loader) {
         this.loader = loader;
     }
 
@@ -25,7 +25,7 @@ public class WiktionaryPageProxy implements IWiktionaryPage {
     }
 
     @Override
-    public IWiktionaryWord getWord(Language language) {
+    public WiktionaryWord getWord(Language language) {
         return page.getWord(language);
     }
 }

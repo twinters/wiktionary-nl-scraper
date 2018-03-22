@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Map;
 
 public class WiktionaryPage implements IWiktionaryPage {
-    private final Map<Language, IWiktionaryWord> languageMap;
+    private final Map<Language, WiktionaryWord> languageMap;
 
-    public WiktionaryPage(Map<Language, IWiktionaryWord> languageMap) {
+    public WiktionaryPage(Map<Language, WiktionaryWord> languageMap) {
         this.languageMap = ImmutableMap.copyOf(languageMap);
     }
 
@@ -18,7 +18,7 @@ public class WiktionaryPage implements IWiktionaryPage {
     }
 
     @Override
-    public IWiktionaryWord getWord(Language language) {
+    public WiktionaryWord getWord(Language language) {
         return languageMap.get(language);
     }
 }

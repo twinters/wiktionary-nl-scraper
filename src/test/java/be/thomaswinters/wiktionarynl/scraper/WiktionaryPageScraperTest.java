@@ -1,8 +1,8 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.Language;
 import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
+import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.WordType;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +31,8 @@ public class WiktionaryPageScraperTest {
         WiktionaryPage mooisteWords = retriever.retrieveDefinitions("mooiste");
 
         // Check if word has a word
-        assertTrue(mooisteWords.getLanguages().contains("NEDERLANDS"));
-        IWiktionaryWord word = mooisteWords.getWord(NEDERLANDS);
+        assertTrue(mooisteWords.getLanguages().contains(NEDERLANDS));
+        WiktionaryWord word = mooisteWords.getWord(NEDERLANDS);
         assertEquals(1, word.getDefinitions().size());
 
         // check for definition correctness

@@ -1,6 +1,9 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.*;
+import be.thomaswinters.wiktionarynl.data.IWiktionaryPage;
+import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
+import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
+import be.thomaswinters.wiktionarynl.data.WordType;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -10,7 +13,7 @@ public class WordLanguageRetriever {
     private final DefinitionsRetriever definitionFinder = new DefinitionsRetriever();
     private final AntonymRetriever antonymFinder = new AntonymRetriever();
 
-    public IWiktionaryWord scrapeWord(String word, Elements elements) {
+    public WiktionaryWord scrapeWord(String word, Elements elements) {
         Map<String, Elements> subsections = collectSubsections(elements);
 
         Map<WordType, List<WiktionaryDefinition>> definitions = definitionFinder.retrieveDefinitions(subsections);

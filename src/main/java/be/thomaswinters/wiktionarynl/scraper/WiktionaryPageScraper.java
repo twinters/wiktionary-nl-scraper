@@ -1,8 +1,8 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
-import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.Language;
 import be.thomaswinters.wiktionarynl.data.WiktionaryPage;
+import be.thomaswinters.wiktionarynl.data.WiktionaryWord;
 import be.thomaswinters.wiktionarynl.util.LanguagePool;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -46,7 +46,7 @@ public class WiktionaryPageScraper {
             Element content = doc.getElementById("mw-content-text").getElementsByClass("mw-parser-output").get(0);
             Map<Language, Elements> languageParts = getLanguageParts(content);
 
-            Map<Language, IWiktionaryWord> pageElements = new HashMap<>();
+            Map<Language, WiktionaryWord> pageElements = new HashMap<>();
             for (Map.Entry<Language, Elements> entry : languageParts.entrySet()) {
                 pageElements.put(entry.getKey(), wordLanguageRetriever.scrapeWord(word, entry.getValue()));
             }
