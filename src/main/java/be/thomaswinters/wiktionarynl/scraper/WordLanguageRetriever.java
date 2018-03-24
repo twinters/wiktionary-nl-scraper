@@ -41,7 +41,7 @@ public class WordLanguageRetriever {
      * @return
      */
     private Map<String, Elements> collectSubsections(Elements elements) {
-        Map<String, Elements> subsectionElements = new HashMap<>();
+        Map<String, Elements> subsectionElements = new LinkedHashMap<>();
 
         Optional<String> currentSection = Optional.empty();
         List<Element> currentRelevantElements = new ArrayList<>();
