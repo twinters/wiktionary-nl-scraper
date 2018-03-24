@@ -40,10 +40,13 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
 
 
     public WiktionaryPage scrapePage(String word) throws IOException, ExecutionException, HttpStatusException {
+        if (word == null) {
+            throw new IllegalArgumentException("Input word can't be null");
+        }
         return definitionCache.get(word, () -> {
             Map<Language, WiktionaryWord> pageElements = new HashMap<>();
             try {
-                Document doc = Jsoup.connect(getWiktionaryUrl(word)).get();
+                Document doc = Jsoup.connect(getWiktionaryUrl(word)).timeout(10 * 1000).get();
                 Element content = doc.getElementById("mw-content-text").getElementsByClass("mw-parser-output").get(0);
                 Map<Language, Elements> languageParts = getLanguageParts(content);
 

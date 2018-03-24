@@ -1,7 +1,6 @@
 package be.thomaswinters.wiktionarynl.data;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class WiktionaryWordProxy implements IWiktionaryWord {
@@ -17,6 +16,9 @@ public class WiktionaryWordProxy implements IWiktionaryWord {
             return word;
         }
         this.word = loader.get();
+        if (this.word == null) {
+            throw new IllegalStateException("Loaded a null word. " + loader);
+        }
         return word;
     }
 
@@ -26,7 +28,7 @@ public class WiktionaryWordProxy implements IWiktionaryWord {
     }
 
     @Override
-    public Map<WordType, List<WiktionaryDefinition>> getDefinitions() {
+    public DefinitionList getDefinitions() {
         return getWiktionaryWord().getDefinitions();
     }
 

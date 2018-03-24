@@ -31,14 +31,14 @@ public class WiktionaryPageScraperTest {
         // Check if word has a word
         assertTrue(mooisteWords.getLanguages().contains(NEDERLANDS));
         WiktionaryWord word = mooisteWords.getWord(NEDERLANDS);
-        assertEquals(1, word.getDefinitions().size());
+        assertEquals(1, word.getDefinitions().getAllDefinitions().size());
 
         // check for definition correctness
         assertEquals("mooiste", word.getWord());
-        assertEquals(1, word.getDefinitions().size());
-        List<WiktionaryDefinition> adjDefinitions = word.getDefinitions().get(WordType.ADJECTIVE);
+        assertEquals(1, word.getDefinitions().getAllDefinitions().size());
+        List<Definition> adjDefinitions = word.getDefinitions().getDefinition(WordType.ADJECTIVE);
         assertEquals(1, adjDefinitions.size());
-        WiktionaryDefinition firstDefinition = adjDefinitions.get(0);
+        Definition firstDefinition = adjDefinitions.get(0);
         assertEquals("verbogen vorm van de overtreffende trap van mooi", firstDefinition.getExplanation());
 
         // Root word
@@ -64,7 +64,7 @@ public class WiktionaryPageScraperTest {
 
             // Check if word has a word
             assertFalse(input + " doesn't have any languages", page.getLanguages().isEmpty());
-            assertFalse(input + " doesn't have Dutch definitions", page.getWord(NEDERLANDS).getDefinitions().isEmpty());
+            assertFalse(input + " doesn't have Dutch definitions", page.getWord(NEDERLANDS).getDefinitions().getAllDefinitions().isEmpty());
         } catch (Exception e) {
             fail(input + " gave the following exception: " + e.getMessage());
             throw e;
@@ -82,7 +82,7 @@ public class WiktionaryPageScraperTest {
         String word = "burgemeester";
         WiktionaryPage quizPage = retriever.scrapePage(word);
         test_has_definitions(word);
-        List<WiktionaryDefinition> definitions = quizPage.getWord(NEDERLANDS).getDefinitions().get(WordType.NOUN);
+        List<Definition> definitions = quizPage.getWord(NEDERLANDS).getDefinitions().getDefinition(WordType.NOUN);
 
 
         assertEquals("hoofd van het gemeentebestuur", definitions.get(0).getExplanation());
@@ -98,7 +98,7 @@ public class WiktionaryPageScraperTest {
         String word = "quizprogramma";
         WiktionaryPage quizPage = retriever.scrapePage(word);
         test_has_definitions(word);
-        WiktionaryDefinition definition = quizPage.getWord(NEDERLANDS).getDefinitions().get(WordType.NOUN).get(0);
+        Definition definition = quizPage.getWord(NEDERLANDS).getDefinitions().getDefinition(WordType.NOUN).get(0);
 
 
         assertEquals("een televisieprogramma waarin kandidaten onderworpen worden aan vragen waarmee zij prijzen kunnen winnen", definition.getExplanation());

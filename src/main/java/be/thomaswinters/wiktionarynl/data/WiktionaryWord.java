@@ -1,19 +1,15 @@
 package be.thomaswinters.wiktionarynl.data;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class WiktionaryWord implements IWiktionaryWord {
     private final String word;
-    private final Map<WordType, List<WiktionaryDefinition>> definitions;
+    private final DefinitionList definitions;
     private final List<IWiktionaryWord> antonyms;
 
-    public WiktionaryWord(String word, Map<WordType, List<WiktionaryDefinition>> definitions, List<IWiktionaryWord> antonyms) {
+    public WiktionaryWord(String word, DefinitionList definitions, List<IWiktionaryWord> antonyms) {
         this.word = word;
-        this.definitions = ImmutableMap.copyOf(definitions);
+        this.definitions = definitions;
         this.antonyms = antonyms;
     }
 
@@ -23,7 +19,7 @@ public class WiktionaryWord implements IWiktionaryWord {
     }
 
     @Override
-    public Map<WordType, List<WiktionaryDefinition>> getDefinitions() {
+    public DefinitionList getDefinitions() {
         return definitions;
     }
 
@@ -32,8 +28,12 @@ public class WiktionaryWord implements IWiktionaryWord {
         return antonyms;
     }
 
+    @Override
     public String toString() {
-        return "WiktionaryWord for " + word + ". Definitions:\n" +
-                definitions.entrySet().stream().map(Object::toString).collect(Collectors.joining("\n"));
+        return "WiktionaryWord{" +
+                "word='" + word + '\'' +
+                ", definitions=" + definitions +
+                ", antonyms=" + antonyms +
+                '}';
     }
 }

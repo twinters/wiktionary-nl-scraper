@@ -1,8 +1,8 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
+import be.thomaswinters.wiktionarynl.data.Definition;
 import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.Language;
-import be.thomaswinters.wiktionarynl.data.WiktionaryDefinition;
 import be.thomaswinters.wiktionarynl.data.WordType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -39,24 +39,26 @@ public class DefinitionsRetriever {
         this.rootWordFinder = rootWordFinder;
     }
 
-    public Map<WordType, List<WiktionaryDefinition>> retrieveDefinitions(String word, Language language, Map<String, Elements> subsections) {
+    public Map<WordType, List<Definition>> retrieveDefinitions(String word, Language language, Map<String, Elements> subsections) {
 
-        Builder<WordType, List<WiktionaryDefinition>> builder = ImmutableMap.builder();
+        Builder<WordType, List<Definition>> builder = ImmutableMap.builder();
 
         for (Entry<String, Elements> subsection : subsections.entrySet()) {
             // Check if it's a definition
             if (WORDTYPE_TITLES.containsKey(subsection.getKey())) {
                 WordType wordType = WORDTYPE_TITLES.get(subsection.getKey());
-                Element definitionsList = findNextList(subsection.getValue().first());
-                List<WiktionaryDefinition> definitions = definitionsList.children().stream().map(listElement -> getDefinition(word, language, listElement)).collect(Collectors.toList());
-                builder.put(wordType, definitions);
+                Optional<Element> definitionsList = findNextList(subsection.getValue().first());
+                if (definitionsList.isPresent()) {
+                    List<Definition> definitions = definitionsList.get().children().stream().map(listElement -> getDefinition(word, language, listElement)).collect(Collectors.toList());
+                    builder.put(wordType, definitions);
+                }
             }
         }
         return builder.build();
     }
 
 
-    private WiktionaryDefinition getDefinition(String word, Language language, Element li) {
+    private Definition getDefinition(String word, Language language, Element li) {
 
         // Get examples
         Elements exampleDl = li.select("dd");
@@ -87,15 +89,15 @@ public class DefinitionsRetriever {
 
         Optional<IWiktionaryWord> rootWord = rootWordFinder.getRootWord(word, language, explanation);
 
-        return new WiktionaryDefinition(category, explanation, examples, rootWord);
+        return new Definition(category, explanation, examples, rootWord);
     }
 
-    private Element findNextList(Element e) {
+    private Optional<Element> findNextList(Element e) {
         Element current = e;
-        while (!current.tag().getName().equals("ol") && !current.tag().getName().equals("ul")) {
+        while (current != null && !current.tag().getName().equals("ol") && !current.tag().getName().equals("ul")) {
             current = current.nextElementSibling();
         }
-        return current;
+        return Optional.ofNullable(current);
     }
 
 

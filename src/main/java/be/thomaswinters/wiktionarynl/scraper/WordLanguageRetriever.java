@@ -25,10 +25,10 @@ public class WordLanguageRetriever {
         Map<String, Elements> subsections = collectSubsections(elements);
 
         // Get all elements
-        Map<WordType, List<WiktionaryDefinition>> definitions = definitionFinder.retrieveDefinitions(word, language, subsections);
+        Map<WordType, List<Definition>> definitions = definitionFinder.retrieveDefinitions(word, language, subsections);
         List<IWiktionaryWord> antonyms = antonymFinder.retrieveAntonyms(language, subsections);
 
-        return new WiktionaryWord(word, definitions, antonyms);
+        return new WiktionaryWord(word, new DefinitionList(definitions), antonyms);
     }
 
 
