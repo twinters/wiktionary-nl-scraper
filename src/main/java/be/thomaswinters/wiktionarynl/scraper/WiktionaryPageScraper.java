@@ -111,10 +111,15 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
     public IWiktionaryWord scrape(Language language, String word) {
         return new WiktionaryWordProxy(() -> {
             try {
-                return scrapePage(word).getWord(language);
+                IWiktionaryPage page = scrapePage(word);
+                if (page == null || !page.getLanguages().contains(language)) {
+                    return new NonExistingWiktionaryWord(word);
+                }
+
+                return page.getWord(language);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException(e);
+                throw new RuntimeException("Could not scrape " + word + " in language " + language, e);
             }
         });
     }

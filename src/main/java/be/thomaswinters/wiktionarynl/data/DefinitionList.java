@@ -16,6 +16,10 @@ public class DefinitionList {
         this.definitions = ImmutableMap.copyOf(definitions);
     }
 
+    public DefinitionList() {
+        this(ImmutableMap.<WordType, List<Definition>>builder().build());
+    }
+
     public Optional<Definition> getFirstDefinition() {
         return definitions.values().stream().flatMap(definitions -> definitions.stream()).findFirst();
     }
