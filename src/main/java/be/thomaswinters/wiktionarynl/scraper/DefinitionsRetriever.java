@@ -73,10 +73,17 @@ public class DefinitionsRetriever {
         Elements examplesDl = li.select("dl");
         examplesDl.remove();
 
+        Optional<String> category = Optional.empty();
+        // Check if there is something with a title
+        Elements titleLinksElements = li.select("a[title=WikiWoordenboek:Werkwoord]");
+        for (Element el : titleLinksElements) {
+            category = Optional.of(el.text());
+            el.remove();
+        }
+
         String text = li.text();
 
-        Optional<String> category = Optional.empty();
-        // Check if a category is specified
+        // Check if a category is specified between brackets
         int firstClosingBracket = text.indexOf(")");
         int firstOpeningBracket = text.indexOf("(");
         if (firstOpeningBracket == 0 && firstClosingBracket > firstOpeningBracket) {
@@ -84,6 +91,7 @@ public class DefinitionsRetriever {
             category = Optional.of(categoryText);
             text = text.substring(firstClosingBracket + 1).trim();
         }
+
         String explanation = text.trim();
 
 

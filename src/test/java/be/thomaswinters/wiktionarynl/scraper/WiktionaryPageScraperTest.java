@@ -105,4 +105,18 @@ public class WiktionaryPageScraperTest {
         assertEquals("Twee Voor Twaalf was lange tijd een bekend quizprogramma.", definition.getExamples().get(0));
 
     }
+
+    @Test
+    public void verb_category_test() throws IOException, ExecutionException {
+        String word = "verbeteren";
+        WiktionaryPage quizPage = retriever.scrapePage(word);
+        test_has_definitions(word);
+        List<Definition> definitions = quizPage.getWord(NEDERLANDS).getDefinitions().getDefinition(WordType.VERB);
+
+
+        assertEquals("overgankelijk", definitions.get(0).getCategory().get());
+        assertEquals("overgankelijk", definitions.get(1).getCategory().get());
+        assertEquals("ergatief", definitions.get(2).getCategory().get());
+        assertEquals("wederkerend", definitions.get(3).getCategory().get());
+    }
 }
