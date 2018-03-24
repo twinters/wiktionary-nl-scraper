@@ -1,25 +1,28 @@
 package be.thomaswinters.wiktionarynl.data;
 
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Definition {
     private final Optional<IWiktionaryWord> rootWord;
-    private final Optional<String> category;
+    private final List<String> categories;
     private final String explanation;
     private final List<String> examples;
 
 
-    public Definition(Optional<String> category, String explanation, List<String> examples, Optional<IWiktionaryWord> rootWord) {
-        this.category = category;
+    public Definition(List<String> category, String explanation, List<String> examples, Optional<IWiktionaryWord> rootWord) {
+        this.categories = ImmutableList.copyOf(category);
         this.explanation = explanation;
         this.examples = examples;
         this.rootWord = rootWord;
     }
 
-    public Optional<String> getCategory() {
-        return category;
+    public List<String> getCategories() {
+        return categories;
     }
 
     public String getExplanation() {
@@ -52,7 +55,7 @@ public class Definition {
 
     @Override
     public String toString() {
-        return (category.isPresent() ? "(" + category.get() + ") " : "") + explanation;
+        return (categories.isEmpty() ? "" : "(" + categories.stream().collect(Collectors.joining(", ")) + ") ") + explanation;
     }
 
 

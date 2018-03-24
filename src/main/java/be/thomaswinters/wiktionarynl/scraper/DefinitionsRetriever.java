@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,11 +74,11 @@ public class DefinitionsRetriever {
         Elements examplesDl = li.select("dl");
         examplesDl.remove();
 
-        Optional<String> category = Optional.empty();
+        List<String> categories = new ArrayList<>();
         // Check if there is something with a title
         Elements titleLinksElements = li.select("a[title=WikiWoordenboek:Werkwoord]");
         for (Element el : titleLinksElements) {
-            category = Optional.of(el.text());
+            categories.add(el.text());
             el.remove();
         }
 
@@ -86,10 +87,17 @@ public class DefinitionsRetriever {
         // Check if a category is specified between brackets
         int firstClosingBracket = text.indexOf(")");
         int firstOpeningBracket = text.indexOf("(");
-        if (firstOpeningBracket == 0 && firstClosingBracket > firstOpeningBracket) {
+        while (firstOpeningBracket == 0 && firstClosingBracket > firstOpeningBracket) {
             String categoryText = text.substring(firstOpeningBracket + 1, firstClosingBracket);
-            category = Optional.of(categoryText);
+            categories.add(categoryText);
             text = text.substring(firstClosingBracket + 1).trim();
+
+            if (text.startsWith(", ")) {
+                text = text.substring(2);
+            }
+
+            firstClosingBracket = text.indexOf(")");
+            firstOpeningBracket = text.indexOf("(");
         }
 
         String explanation = text.trim();
@@ -97,7 +105,7 @@ public class DefinitionsRetriever {
 
         Optional<IWiktionaryWord> rootWord = rootWordFinder.getRootWord(word, language, explanation);
 
-        return new Definition(category, explanation, examples, rootWord);
+        return new Definition(categories, explanation, examples, rootWord);
     }
 
     private Optional<Element> findNextList(Element e) {

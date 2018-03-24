@@ -86,11 +86,11 @@ public class WiktionaryPageScraperTest {
 
 
         assertEquals("hoofd van het gemeentebestuur", definitions.get(0).getExplanation());
-        assertEquals("beroep", definitions.get(0).getCategory().get());
+        assertEquals("beroep", definitions.get(0).getCategories().get(0));
         assertEquals("het bord onder de spil van een molen", definitions.get(1).getExplanation());
         assertEquals("de naam van een tweetal meeuwensoorten:", definitions.get(2).getExplanation());
         assertEquals(Arrays.asList("de grote burgemeester", "de kleine burgemeester"), definitions.get(2).getExamples());
-        assertEquals("vogels", definitions.get(2).getCategory().get());
+        assertEquals("vogels", definitions.get(2).getCategories().get(0));
     }
 
     @Test
@@ -114,9 +114,9 @@ public class WiktionaryPageScraperTest {
         List<Definition> definitions = quizPage.getWord(NEDERLANDS).getDefinitions().getDefinition(WordType.VERB);
 
 
-        assertEquals("overgankelijk", definitions.get(0).getCategory().get());
-        assertEquals("overgankelijk", definitions.get(1).getCategory().get());
-        assertEquals("ergatief", definitions.get(2).getCategory().get());
-        assertEquals("wederkerend", definitions.get(3).getCategory().get());
+        assertEquals("overgankelijk", definitions.get(0).getCategories().get(0));
+        assertEquals("overgankelijk", definitions.get(1).getCategories().get(0));
+        assertEquals("ergatief", definitions.get(2).getCategories().get(0));
+        assertEquals("wederkerend", definitions.get(3).getCategories().get(0));
     }
 }
