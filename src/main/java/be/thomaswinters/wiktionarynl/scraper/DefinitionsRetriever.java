@@ -50,7 +50,9 @@ public class DefinitionsRetriever {
                 WordType wordType = WORDTYPE_TITLES.get(subsection.getKey());
                 Optional<Element> definitionsList = findNextList(subsection.getValue().first());
                 if (definitionsList.isPresent()) {
-                    List<Definition> definitions = definitionsList.get().children().stream().map(listElement -> getDefinition(word, language, listElement)).collect(Collectors.toList());
+                    List<Definition> definitions = definitionsList.get().children().stream().map(listElement -> getDefinition(word, language, listElement))
+                            // Filter out empty definitions
+                            .filter(e -> !e.getExplanation().trim().equals("")).collect(Collectors.toList());
                     builder.put(wordType, definitions);
                 }
             }
