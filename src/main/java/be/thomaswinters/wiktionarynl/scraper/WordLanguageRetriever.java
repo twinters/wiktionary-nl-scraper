@@ -56,9 +56,7 @@ public class WordLanguageRetriever {
                 if (!currentSection.isPresent() && !currentRelevantElements.isEmpty()) {
 //                    System.out.println("WARNING: The following elements got lost due to no present subsection header: " + currentRelevantElements);
                 } else {
-                    if (currentSection.isPresent()) {
-                        subsectionElements.put(currentSection.get(), new Elements(currentRelevantElements));
-                    }
+                    putInNewSection(subsectionElements, currentSection, currentRelevantElements);
                 }
                 currentSection = Optional.of(e.getElementsByAttribute("title").get(0).attr("title"));
                 currentRelevantElements = new ArrayList<>();
@@ -66,11 +64,24 @@ public class WordLanguageRetriever {
                 currentRelevantElements.add(e);
             }
         }
-        if (currentSection.isPresent()) {
-            subsectionElements.put(currentSection.get(), new Elements(currentRelevantElements));
-        }
+
+        putInNewSection(subsectionElements, currentSection, currentRelevantElements);
 
         return subsectionElements;
 
+    }
+
+    private void putInNewSection(Map<String, Elements> subsectionElements, Optional<String> currentSection, List<Element> currentRelevantElements) {
+        if (currentSection.isPresent()) {
+            String currentSectionGet = currentSection.get();
+            if (!subsectionElements.containsKey(currentSectionGet)) {
+                subsectionElements.put(currentSectionGet, new Elements(currentRelevantElements));
+            } else {
+                Elements oldElements = subsectionElements.get(currentSectionGet);
+                List<Element> newRelevantElements = new ArrayList<>(oldElements);
+                newRelevantElements.addAll(currentRelevantElements);
+                subsectionElements.put(currentSectionGet, new Elements(newRelevantElements));
+            }
+        }
     }
 }
