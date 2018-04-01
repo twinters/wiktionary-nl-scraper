@@ -25,6 +25,7 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
 
     private final String languageCode;
 
+
     public WiktionaryPageScraper(String languageCode) {
         this.languageCode = languageCode;
     }
@@ -105,6 +106,10 @@ public class WiktionaryPageScraper implements IWiktionaryWordScraper {
     public static void main(String[] args) throws IOException, ExecutionException {
 
         new WiktionaryPageScraper().scrapePage("mooi");
+    }
+
+    String getLanguageCode() {
+        return languageCode;
     }
 
     @Override
