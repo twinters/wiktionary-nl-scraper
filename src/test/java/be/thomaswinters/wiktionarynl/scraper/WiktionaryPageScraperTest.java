@@ -78,6 +78,12 @@ public class WiktionaryPageScraperTest {
     }
 
     @Test
+    public void divergent_antonym() throws IOException, ExecutionException {
+        WiktionaryPage page = retriever.scrapePage("divergent");
+        assertEquals(Arrays.asList("convergent"), page.getWord(NEDERLANDS).getAntonyms().stream().map(wikiword -> wikiword.getWord()).collect(Collectors.toList()));
+    }
+
+    @Test
     public void burgemeester_definition() throws IOException, ExecutionException {
         String word = "burgemeester";
         WiktionaryPage quizPage = retriever.scrapePage(word);
