@@ -1,8 +1,8 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
 import be.thomaswinters.wiktionarynl.data.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class WiktionaryPageScraperTest {
 
@@ -18,7 +19,7 @@ public class WiktionaryPageScraperTest {
 
     private WiktionaryPageScraper retriever;
 
-    @Before
+    @BeforeEach
     public void setup() {
         retriever = new WiktionaryPageScraper();
     }
@@ -63,8 +64,8 @@ public class WiktionaryPageScraperTest {
             WiktionaryPage page = retriever.scrapePage(input);
 
             // Check if word has a word
-            assertFalse(input + " doesn't have any languages", page.getLanguages().isEmpty());
-            assertFalse(input + " doesn't have Dutch definitions", page.getWord(NEDERLANDS).getDefinitions().getAllDefinitions().isEmpty());
+            assertFalse(page.getLanguages().isEmpty(),input + " doesn't have any languages");
+            assertFalse(page.getWord(NEDERLANDS).getDefinitions().getAllDefinitions().isEmpty(), input + " doesn't have Dutch definitions");
         } catch (Exception e) {
             fail(input + " gave the following exception: " + e.getMessage());
             throw e;
