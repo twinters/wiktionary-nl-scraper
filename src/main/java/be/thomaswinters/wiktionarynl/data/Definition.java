@@ -3,8 +3,10 @@ package be.thomaswinters.wiktionarynl.data;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Definition {
@@ -35,19 +37,21 @@ public class Definition {
 
     public Optional<IWiktionaryWord> getTotalRoot() {
         Optional<IWiktionaryWord> totalRoot = getRootWord();
+        Set<IWiktionaryWord> handled = new HashSet<>();
         if (totalRoot.isPresent()) {
             do {
+                handled.add(totalRoot.get());
                 Optional<IWiktionaryWord> newTotalRoot = totalRoot.get().getDefinitions().getAllDefinitions().stream()
-                        .map(definition -> definition.getRootWord())
-                        .filter(rootWord -> rootWord.isPresent())
-                        .map(rootWord -> rootWord.get())
+                        .map(Definition::getRootWord)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
                         .findFirst();
                 if (newTotalRoot.isPresent()) {
                     totalRoot = newTotalRoot;
                 } else {
                     break;
                 }
-            } while (!getRootWord().equals(totalRoot));
+            } while (!getRootWord().equals(totalRoot) && !handled.contains(totalRoot.get()));
         }
 
         return totalRoot;

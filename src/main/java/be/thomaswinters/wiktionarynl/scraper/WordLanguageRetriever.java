@@ -72,8 +72,8 @@ public class WordLanguageRetriever {
     }
 
     private void putInNewSection(Map<String, Elements> subsectionElements, Optional<String> currentSection, List<Element> currentRelevantElements) {
-        if (currentSection.isPresent()) {
-            String currentSectionGet = currentSection.get();
+        currentSection.ifPresent(s -> {
+            String currentSectionGet = s;
             if (!subsectionElements.containsKey(currentSectionGet)) {
                 subsectionElements.put(currentSectionGet, new Elements(currentRelevantElements));
             } else {
@@ -82,6 +82,6 @@ public class WordLanguageRetriever {
                 newRelevantElements.addAll(currentRelevantElements);
                 subsectionElements.put(currentSectionGet, new Elements(newRelevantElements));
             }
-        }
+        });
     }
 }

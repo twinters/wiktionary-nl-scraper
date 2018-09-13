@@ -31,7 +31,11 @@ public class RootWordRetriever {
 
     private List<Pattern> rootFinders = Arrays.asList(
             // Substantief
+            Pattern.compile("enkelvoud van het zelfstandig naamwoord (\\w+)"),
             Pattern.compile("verkleinwoord enkelvoud van het zelfstandig naamwoord (\\w+)"),
+            Pattern.compile("meervoud van het zelfstandig naamwoord (\\w+)"),
+            Pattern.compile("meervoud van het zelfstandig naamwoord (\\w+)"),
+            Pattern.compile("verkleinwoord meervoud van het zelfstandig naamwoord (\\w+)"),
 
             // Adjectief
             Pattern.compile("verbogen vorm van de stellende trap van (\\w+)"),
@@ -45,6 +49,9 @@ public class RootWordRetriever {
             Pattern.compile("eerste persoon enkelvoud tegenwoordige tijd van (\\w+)"),
             Pattern.compile("tweede persoon enkelvoud tegenwoordige tijd van (\\w+)"),
             Pattern.compile("derde persoon enkelvoud tegenwoordige tijd van (\\w+)"),
+            Pattern.compile("eerste persoon enkelvoud van (\\w+)"),
+            Pattern.compile("tweede persoon enkelvoud van (\\w+)"),
+            Pattern.compile("derde persoon enkelvoud van (\\w+)"),
             Pattern.compile("enkelvoud verleden tijd van (\\w+)"),
             Pattern.compile("meervoud verleden tijd van (\\w+)"),
             Pattern.compile("voltooid deelwoord van (\\w+)"),

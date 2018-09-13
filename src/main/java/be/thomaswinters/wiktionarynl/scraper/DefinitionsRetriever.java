@@ -49,12 +49,12 @@ public class DefinitionsRetriever {
             if (WORDTYPE_TITLES.containsKey(subsection.getKey())) {
                 WordType wordType = WORDTYPE_TITLES.get(subsection.getKey());
                 Optional<Element> definitionsList = findNextList(subsection.getValue().first());
-                if (definitionsList.isPresent()) {
-                    List<Definition> definitions = definitionsList.get().children().stream().map(listElement -> getDefinition(word, language, listElement))
+                definitionsList.ifPresent(element -> {
+                    List<Definition> definitions = element.children().stream().map(listElement -> getDefinition(word, language, listElement))
                             // Filter out empty definitions
                             .filter(e -> !e.getExplanation().trim().equals("")).collect(Collectors.toList());
                     builder.put(wordType, definitions);
-                }
+                });
             }
         }
         return builder.build();
