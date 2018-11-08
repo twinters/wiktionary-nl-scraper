@@ -17,6 +17,11 @@ public class RootWordRetriever {
         this.scraper = scraper;
     }
 
+    public Optional<IWiktionaryWord> getRootWord(String word, Language language) {
+        return scraper.scrape(language, word).getDefinitions().getFirstDefinition()
+                .flatMap(definition -> getRootWord(word, language, definition.getExplanation()));
+    }
+
     public Optional<IWiktionaryWord> getRootWord(String word, Language language, String explanation) {
         // TODO: possibly use the href link provided in the Element object?
 
