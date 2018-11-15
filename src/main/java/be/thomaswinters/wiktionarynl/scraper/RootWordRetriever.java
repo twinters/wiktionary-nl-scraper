@@ -1,5 +1,7 @@
 package be.thomaswinters.wiktionarynl.scraper;
 
+import be.thomaswinters.wiktionarynl.data.Definition;
+import be.thomaswinters.wiktionarynl.data.DefinitionList;
 import be.thomaswinters.wiktionarynl.data.IWiktionaryWord;
 import be.thomaswinters.wiktionarynl.data.Language;
 
@@ -18,8 +20,16 @@ public class RootWordRetriever {
     }
 
     public Optional<IWiktionaryWord> getRootWord(String word, Language language) {
-        return scraper.scrape(language, word).getDefinitions().getFirstDefinition()
-                .flatMap(definition -> getRootWord(word, language, definition.getExplanation()));
+        IWiktionaryWord wikiword = scraper.scrape(language, word);
+        Optional<IWiktionaryWord> rootWord =
+                wikiword
+                        .getDefinitions()
+                        .getFirstDefinition()
+                        .flatMap(definition -> getRootWord(word, language, definition.getExplanation()));
+        if (rootWord.isPresent()) {
+            return getRootWord(rootWord.get().getWord(), language);
+        }
+        return Optional.of(wikiword);
     }
 
     public Optional<IWiktionaryWord> getRootWord(String word, Language language, String explanation) {
