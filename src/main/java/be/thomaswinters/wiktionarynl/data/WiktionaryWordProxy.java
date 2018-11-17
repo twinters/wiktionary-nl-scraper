@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class WiktionaryWordProxy implements IWiktionaryWord {
-    private IWiktionaryWord word = null;
+    private IWiktionaryWord loadedWord = null;
     private Supplier<IWiktionaryWord> loader;
 
     public WiktionaryWordProxy(Supplier<IWiktionaryWord> loader) {
@@ -12,14 +12,14 @@ public class WiktionaryWordProxy implements IWiktionaryWord {
     }
 
     private IWiktionaryWord getWiktionaryWord() {
-        if (word != null) {
-            return word;
+        if (loadedWord != null) {
+            return loadedWord;
         }
-        this.word = loader.get();
-        if (this.word == null) {
-            throw new IllegalStateException("Loaded a null word. " + loader);
+        this.loadedWord = loader.get();
+        if (this.loadedWord == null) {
+            throw new IllegalStateException("Loaded a null loadedWord. " + loader);
         }
-        return word;
+        return loadedWord;
     }
 
     @Override
