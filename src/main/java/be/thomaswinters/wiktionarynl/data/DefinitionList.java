@@ -35,7 +35,7 @@ public class DefinitionList {
         return definitions.keySet();
     }
 
-    public ImmutableMap getDefinitions() {
+    public ImmutableMap<WordType, List<Definition>> getDefinitions() {
         return definitions;
     }
 
