@@ -3,10 +3,7 @@ package be.thomaswinters.wiktionarynl.data;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class DefinitionList {
 
@@ -21,12 +18,12 @@ public class DefinitionList {
     }
 
     public Optional<Definition> getFirstDefinition() {
-        return definitions.values().stream().flatMap(definitions -> definitions.stream()).findFirst();
+        return definitions.values().stream().flatMap(Collection::stream).findFirst();
     }
 
     public List<Definition> getAllDefinitions() {
         ImmutableList.Builder<Definition> b = ImmutableList.builder();
-        definitions.values().stream().forEach(e -> b.addAll(e));
+        definitions.values().forEach(b::addAll);
         return b.build();
     }
 
